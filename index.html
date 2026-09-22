@@ -244,36 +244,86 @@
     <!-- ========================================== -->
     <div id="tab-nutrition" class="tab-pane hidden space-y-5">
       
-      <!-- 栄養摂取状況ゲージ（タ・脂・炭表記） -->
-      <div class="bg-zinc-900 border-2 border-zinc-700 rounded-3xl p-5">
-        <h2 class="text-base font-black text-white mb-3">本日の栄養摂取状況</h2>
-        <div class="space-y-1.5 mb-4">
-          <div class="flex justify-between text-sm font-black">
+      <!-- ★本日の栄養摂取状況（タ・脂・炭・糖 完全配置ゲージ） -->
+      <div class="bg-zinc-900 border-2 border-zinc-700 rounded-3xl p-5 space-y-3.5">
+        <div class="flex justify-between items-center mb-1">
+          <h2 class="text-base font-black text-white">本日の栄養摂取状況</h2>
+          <span class="text-[10px] font-bold text-zinc-400">タ・脂・炭・糖 完全監視</span>
+        </div>
+
+        <!-- ① 【タ】タンパク質ゲージ -->
+        <div class="space-y-1">
+          <div class="flex justify-between text-xs font-black">
             <span class="text-zinc-300 flex items-center gap-1.5">
-              <span class="px-1.5 py-0.5 rounded bg-emerald-500 text-black text-xs font-black">タ</span>
+              <span class="px-1.5 py-0.5 rounded bg-emerald-500 text-black text-[10px] font-black">タ</span>
               タンパク質 (目標: <span id="targetProteinText">140</span>g)
             </span>
-            <span id="currentProteinText" class="text-emerald-400 text-base">0g</span>
+            <span id="currentProteinText" class="text-emerald-400 text-sm">0g</span>
           </div>
-          <div class="w-full bg-black h-3.5 rounded-full overflow-hidden border border-zinc-700">
+          <div class="w-full bg-black h-3 rounded-full overflow-hidden border border-zinc-700">
             <div id="proteinBar" class="bg-emerald-500 h-full w-0 transition-all duration-500"></div>
           </div>
         </div>
-        <div class="space-y-1.5">
-          <div class="flex justify-between text-sm font-black">
-            <span class="text-zinc-300">総カロリー (目安: <span id="targetCalText">2400</span>kcal)</span>
-            <span id="currentCalText" class="text-yellow-400 text-base">0kcal</span>
+
+        <!-- ② 【脂】脂質ゲージ -->
+        <div class="space-y-1">
+          <div class="flex justify-between text-xs font-black">
+            <span class="text-zinc-300 flex items-center gap-1.5">
+              <span class="px-1.5 py-0.5 rounded bg-orange-500 text-black text-[10px] font-black">脂</span>
+              脂質 (目安上限: <span id="targetFatText">50</span>g)
+            </span>
+            <span id="currentFatText" class="text-orange-400 text-sm">0g</span>
           </div>
-          <div class="w-full bg-black h-3.5 rounded-full overflow-hidden border border-zinc-700">
+          <div class="w-full bg-black h-3 rounded-full overflow-hidden border border-zinc-700">
+            <div id="fatBar" class="bg-orange-500 h-full w-0 transition-all duration-500"></div>
+          </div>
+        </div>
+
+        <!-- ③ 【炭】炭水化物ゲージ -->
+        <div class="space-y-1">
+          <div class="flex justify-between text-xs font-black">
+            <span class="text-zinc-300 flex items-center gap-1.5">
+              <span class="px-1.5 py-0.5 rounded bg-yellow-400 text-black text-[10px] font-black">炭</span>
+              炭水化物 (目標: <span id="targetCarbsText">315</span>g)
+            </span>
+            <span id="currentCarbsText" class="text-yellow-400 text-sm">0g</span>
+          </div>
+          <div class="w-full bg-black h-3 rounded-full overflow-hidden border border-zinc-700">
+            <div id="carbsBar" class="bg-yellow-400 h-full w-0 transition-all duration-500"></div>
+          </div>
+        </div>
+
+        <!-- ④ 【糖】糖質・液体糖（ジュース等）ゲージ -->
+        <div class="space-y-1">
+          <div class="flex justify-between text-xs font-black">
+            <span class="text-zinc-300 flex items-center gap-1.5">
+              <span class="px-1.5 py-0.5 rounded bg-fuchsia-500 text-white text-[10px] font-black">糖</span>
+              うち糖質/ジュース (警戒: 50g)
+            </span>
+            <span id="currentSugarText" class="text-fuchsia-400 text-sm">0g</span>
+          </div>
+          <div class="w-full bg-black h-3 rounded-full overflow-hidden border border-zinc-700">
+            <div id="sugarBar" class="bg-fuchsia-500 h-full w-0 transition-all duration-500"></div>
+          </div>
+        </div>
+
+        <!-- ⑤ 総カロリーゲージ -->
+        <div class="pt-2 border-t border-zinc-800 space-y-1">
+          <div class="flex justify-between text-xs font-black">
+            <span class="text-zinc-400">総カロリー (目安: <span id="targetCalText">2400</span>kcal)</span>
+            <span id="currentCalText" class="text-yellow-400 text-sm">0kcal</span>
+          </div>
+          <div class="w-full bg-black h-2.5 rounded-full overflow-hidden border border-zinc-800">
             <div id="calBar" class="bg-yellow-400 h-full w-0 transition-all duration-500"></div>
           </div>
         </div>
+
       </div>
 
       <!-- 写真アップロード -->
       <div class="bg-zinc-900 border-2 border-zinc-700 rounded-3xl p-4 space-y-3">
         <div class="flex justify-between items-center">
-          <h3 class="text-xs font-black text-zinc-400 uppercase tracking-wider">食事写真AI精密解析</h3>
+          <h3 class="text-xs font-black text-zinc-400 uppercase tracking-wider">食事・飲料AI精密解析</h3>
           <span id="activeModelTag" class="text-[10px] font-black text-emerald-400 bg-black px-2 py-0.5 rounded border border-zinc-800">Gemini 3.8 Flash 装填中</span>
         </div>
         
@@ -284,7 +334,7 @@
           <label for="mealImageCamera" class="cursor-pointer flex flex-col items-center justify-center p-3.5 bg-black border-2 border-zinc-700 hover:border-emerald-500 rounded-2xl active:scale-95 transition text-center">
             <span class="text-3xl mb-1">📸</span>
             <span class="text-sm font-black text-white">カメラで撮影</span>
-            <span class="text-[10px] font-bold text-zinc-500">超圧縮して即時判定</span>
+            <span class="text-[10px] font-bold text-zinc-500">ジュース・料理を即時判定</span>
           </label>
           <label for="mealImageGallery" class="cursor-pointer flex flex-col items-center justify-center p-3.5 bg-black border-2 border-zinc-700 hover:border-emerald-500 rounded-2xl active:scale-95 transition text-center">
             <span class="text-3xl mb-1">🖼️</span>
@@ -294,17 +344,17 @@
         </div>
 
         <div id="aiLoading" class="hidden text-center py-2 text-sm font-black text-emerald-400 animate-pulse">
-          Gemini 3.8 Flash がタ・脂・炭を精密解析中...
+          Gemini 3.8 Flash がタ・脂・炭・糖を精密解析中...
         </div>
       </div>
 
-      <!-- 参謀厳選：筋肥大給餌カタログ（タ・脂・炭表記） -->
+      <!-- 参謀厳選：筋肥大給餌カタログ -->
       <div class="bg-zinc-900 border-2 border-zinc-700 rounded-3xl p-4 space-y-3">
         <div class="flex justify-between items-center">
           <h3 class="text-xs font-black text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
             <span>🍽️</span> 参謀厳選：筋肥大給餌カタログ
           </h3>
-          <span class="text-[10px] font-bold text-zinc-400">画像・分量・タ脂炭完全版</span>
+          <span class="text-[10px] font-bold text-zinc-400">画像・分量・タ脂炭糖完全版</span>
         </div>
 
         <div class="grid grid-cols-3 gap-1.5 p-1 bg-black rounded-xl border border-zinc-800">
@@ -577,33 +627,33 @@
       { day: 0, name: '日', label: '休', isWork: false }
     ];
 
-    // ★給餌カタログ（タ・脂・炭 完全表記）
+    // ★給餌カタログ（タ・脂・炭・糖 完全表記）
     const MEAL_CATALOG = {
       lunch: [
         {
           name: '鶏胸肉の照り焼き定食',
-          cal: 650, p: 45, f: 9, c: 90,
+          cal: 650, p: 45, f: 9, c: 90, sugar: 8,
           img: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&auto=format&fit=crop&q=80',
           volume: '皮なし鶏胸肉180g / 白米220g(中盛強) / 味噌汁(豆腐1/4丁) / ブロッコリー50g',
           desc: '脂質を極限まで削りつつ、午後の活動エネルギーと45gのタンパク質を確保する最強の王道メニュー。'
         },
         {
           name: 'サバの塩焼き定食',
-          cal: 680, p: 38, f: 18, c: 85,
+          cal: 680, p: 38, f: 18, c: 85, sugar: 2,
           img: 'https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=600&auto=format&fit=crop&q=80',
           volume: 'サバ塩焼き1切れ(100g) / 白米220g / 納豆1パック / 味噌汁',
           desc: '良質なオメガ3脂肪酸(EPA/DHA)が筋膜の炎症を抑えインスリン感受性を改善。納豆追加でタ38g突破。'
         },
         {
           name: '超速コンビニ定食',
-          cal: 660, p: 42, f: 12, c: 92,
+          cal: 660, p: 42, f: 12, c: 92, sugar: 7,
           img: 'https://images.unsplash.com/photo-1505253758473-96b3015f21c9?w=600&auto=format&fit=crop&q=80',
           volume: '鮭おにぎり2個 / サラダチキン1個(110g) / オイコスヨーグルト1個',
           desc: '忙しい昼休みにコンビニで1分で調達可能。咀嚼もしやすく午後の眠気を誘発しにくい。'
         },
         {
           name: '牛赤身肉ステーキ定食',
-          cal: 630, p: 44, f: 13, c: 80,
+          cal: 630, p: 44, f: 13, c: 80, sugar: 5,
           img: 'https://images.unsplash.com/photo-1600891964092-4316c288032e?w=600&auto=format&fit=crop&q=80',
           volume: '牛モモ赤身170g / 白米200g / 和風おろし玉ねぎソース / サラダ',
           desc: '天然のクレアチンと鉄分・亜鉛を補給。夜のトレーニングで出力できる筋パワーの底上げを狙う。'
@@ -612,58 +662,58 @@
       pre: [
         {
           name: 'おにぎり2個＋ちくわ',
-          cal: 420, p: 18, f: 3, c: 80,
+          cal: 420, p: 18, f: 3, c: 80, sugar: 3,
           img: 'https://images.unsplash.com/photo-1505253758473-96b3015f21c9?w=600&auto=format&fit=crop&q=80',
           volume: '鮭/昆布おにぎり2個(米約200g) / ちくわ2本(またはチキンバー1本)',
           desc: 'トレ2.5時間前に完食。脂3g以下で完全に胃を通過させ、血糖値を満タンにしてジムに入る。'
         },
         {
           name: '力うどん（餅1個＋温玉）',
-          cal: 430, p: 17, f: 6, c: 78,
+          cal: 430, p: 17, f: 6, c: 78, sugar: 4,
           img: 'https://images.unsplash.com/photo-1618841557871-b4664fbf0cb3?w=600&auto=format&fit=crop&q=80',
           volume: 'うどん1玉 / 切り餅1個(50g) / 温泉卵1個 / 刻みネギ',
           desc: 'うどんと餅のダブル炭水化物は胃もたれゼロ。素早くグリコーゲンに変換され、後半セットのバテを防ぐ。'
         },
         {
           name: 'バナナ2本＋プロテイン',
-          cal: 360, p: 17, f: 2, c: 68,
+          cal: 360, p: 17, f: 2, c: 68, sugar: 28,
           img: 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=600&auto=format&fit=crop&q=80',
           volume: 'バナナ中2本(可食部約180g) / ホエイプロテイン15g(水割り)',
-          desc: 'デスクで音を立てずに素早く補給可能。カリウムが筋痙攣を防ぎ、フルパワーの収縮をサポートする。'
+          desc: 'デスクで素早く補給可能。カリウムが筋痙攣を防ぎ、果糖・ブドウ糖が即効エネルギーになる。'
         },
         {
           name: '和菓子大福＋どら焼き＋卵',
-          cal: 390, p: 14, f: 5, c: 72,
+          cal: 390, p: 14, f: 5, c: 72, sugar: 38,
           img: 'https://images.unsplash.com/photo-1582293041079-7814c2f12063?w=600&auto=format&fit=crop&q=80',
           volume: '豆大福1個(約100g) / どら焼き半分 / ゆで卵1個(塩少々)',
-          desc: '小豆のポリフェノールとあんこの単糖・二糖類が即効エネルギーに。和菓子はボディビルダーの鉄板プレワークアウト食。'
+          desc: '小豆のポリフェノールとあんこの糖分が爆速で血中に乗る。ビルダー御用達のプレワークアウト食。'
         }
       ],
       dinner: [
         {
           name: 'マグロ赤身とサーモン海鮮丼',
-          cal: 670, p: 46, f: 11, c: 95,
+          cal: 670, p: 46, f: 11, c: 95, sugar: 3,
           img: 'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=600&auto=format&fit=crop&q=80',
           volume: 'マグロ赤身100g / サーモン50g / 白米250g(大盛) / 冷奴(絹ごし半丁)',
           desc: 'トレ直後のプロテイン摂取から1時間後に投入。刺身は熱変性していない良質タンパク質。消化吸収スピードが段違い。'
         },
         {
           name: '豚ヒレ肉の生姜焼き定食',
-          cal: 650, p: 44, f: 10, c: 92,
+          cal: 650, p: 44, f: 10, c: 92, sugar: 8,
           img: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&auto=format&fit=crop&q=80',
           volume: '豚ヒレ肉180g / 白米250g / 玉ねぎ少々 / 具沢山豚汁(根菜・こんにゃく)',
           desc: '豚ヒレはロースの数分の一の脂質。ビタミンB1が炭水化物の代謝を爆進させ、乳酸の分解と疲労回復を加速させる。'
         },
         {
           name: '鶏むね肉と卵の親子丼',
-          cal: 680, p: 47, f: 13, c: 90,
+          cal: 680, p: 47, f: 13, c: 90, sugar: 9,
           img: 'https://images.unsplash.com/photo-1512058564366-18510be2db19?w=600&auto=format&fit=crop&q=80',
           volume: '皮なし鶏胸肉160g / 卵2個(ふわとろ半熟) / 白米250g / 出汁つゆ',
           desc: '卵の完全アミノ酸スコア100と鶏胸肉のダブル同化。夜遅い時間の食事でも胃腸に負担をかけず深睡眠を邪魔しない。'
         },
         {
           name: 'チキン＋納豆2個＋大盛飯',
-          cal: 680, p: 48, f: 14, c: 88,
+          cal: 680, p: 48, f: 14, c: 88, sugar: 4,
           img: 'https://images.unsplash.com/photo-1505253758473-96b3015f21c9?w=600&auto=format&fit=crop&q=80',
           volume: 'サラダチキン1個(110g) / 納豆2パック / 生卵1個 / パックご飯(250g)',
           desc: '疲弊して帰宅しても包丁・コンロ一切不要、3分で完成。妥協なくタンパク質48gを喉へ叩き込む非常事態用メニュー。'
@@ -1366,27 +1416,60 @@
       saveData();
     }
 
+    // ★食事タブの描画（タ・脂・炭・糖 完全連動ゲージ）
     function renderNutritionTab() {
-      const targetProtein = Math.round(appData.user.weight * 2.0);
-      const targetCal = Math.round(appData.user.weight * 33);
+      const targetProtein = Math.round(appData.user.weight * 2.0); // 140g
+      const targetFat = Math.round(appData.user.weight * 0.7);     // 50g
+      const targetCarbs = Math.round(appData.user.weight * 4.5);   // 315g
+      const targetSugar = 50;                                      // 糖質上限50g
+      const targetCal = Math.round(appData.user.weight * 33);      // 2310kcal
 
       document.getElementById('targetProteinText').innerText = targetProtein;
+      document.getElementById('targetFatText').innerText = targetFat;
+      document.getElementById('targetCarbsText').innerText = targetCarbs;
       document.getElementById('targetCalText').innerText = targetCal;
 
-      let totalP = 0, totalCal = 0;
+      let totalP = 0, totalF = 0, totalC = 0, totalSugar = 0, totalCal = 0;
       appData.daily.meals.forEach(m => {
         totalP += m.protein || 0;
+        totalF += m.fat || 0;
+        totalC += m.carbs || 0;
+        totalSugar += m.sugar || 0;
         totalCal += m.cal || 0;
       });
 
+      // 数値反映
       document.getElementById('currentProteinText').innerText = `${totalP}g / ${targetProtein}g`;
+      document.getElementById('currentFatText').innerText = `${totalF}g / ${targetFat}g`;
+      document.getElementById('currentCarbsText').innerText = `${totalC}g / ${targetCarbs}g`;
+      document.getElementById('currentSugarText').innerText = `${totalSugar}g / ${targetSugar}g`;
       document.getElementById('currentCalText').innerText = `${totalCal}kcal`;
 
+      // ゲージ比率計算
       const pPercent = Math.min(100, Math.round((totalP / targetProtein) * 100));
-      const cPercent = Math.min(100, Math.round((totalCal / targetCal) * 100));
+      const fPercent = Math.min(100, Math.round((totalF / targetFat) * 100));
+      const cPercent = Math.min(100, Math.round((totalC / targetCarbs) * 100));
+      const sugarPercent = Math.min(100, Math.round((totalSugar / targetSugar) * 100));
+      const calPercent = Math.min(100, Math.round((totalCal / targetCal) * 100));
 
       document.getElementById('proteinBar').style.width = `${pPercent}%`;
-      document.getElementById('calBar').style.width = `${cPercent}%`;
+      
+      // 脂質は上限超過で赤く変化
+      const fatBarEl = document.getElementById('fatBar');
+      fatBarEl.style.width = `${fPercent}%`;
+      fatBarEl.className = (totalF > targetFat) ? 'bg-red-500 h-full transition-all duration-500' : 'bg-orange-500 h-full transition-all duration-500';
+
+      // 炭水化物も過剰で警告色へ
+      const carbsBarEl = document.getElementById('carbsBar');
+      carbsBarEl.style.width = `${cPercent}%`;
+      carbsBarEl.className = (totalC > 380) ? 'bg-red-500 h-full transition-all duration-500' : 'bg-yellow-400 h-full transition-all duration-500';
+
+      // 糖質も上限超過で警告色へ
+      const sugarBarEl = document.getElementById('sugarBar');
+      sugarBarEl.style.width = `${sugarPercent}%`;
+      sugarBarEl.className = (totalSugar > targetSugar) ? 'bg-red-500 h-full transition-all duration-500' : 'bg-fuchsia-500 h-full transition-all duration-500';
+
+      document.getElementById('calBar').style.width = `${calPercent}%`;
 
       const logsEl = document.getElementById('mealLogs');
       if (appData.daily.meals.length === 0) {
@@ -1400,6 +1483,7 @@
           const pBadge = `<span class="text-xs font-black text-emerald-400">タ: ${meal.protein || 0}g</span>`;
           const fBadge = meal.fat !== undefined ? `<span class="text-xs font-bold text-orange-400 ml-1.5">脂: ${meal.fat}g</span>` : '';
           const cBadge = meal.carbs !== undefined ? `<span class="text-xs font-bold text-yellow-400 ml-1.5">炭: ${meal.carbs}g</span>` : '';
+          const sBadge = meal.sugar !== undefined && meal.sugar > 0 ? `<span class="text-[11px] font-bold text-fuchsia-400 ml-1">(糖:${meal.sugar}g)</span>` : '';
 
           item.innerHTML = `
             <div>
@@ -1408,7 +1492,7 @@
             </div>
             <div class="text-right">
               <div>
-                ${pBadge}${fBadge}${cBadge}
+                ${pBadge}${fBadge}${cBadge}${sBadge}
               </div>
               <span class="text-xs font-bold text-zinc-300">${meal.cal}kcal</span>
             </div>
@@ -1431,7 +1515,6 @@
       renderCatalogList();
     }
 
-    // ★給餌カタログの描画（タ・脂・炭 完全表記）
     function renderCatalogList() {
       const container = document.getElementById('catalogList');
       const items = MEAL_CATALOG[currentCatalogCategory] || [];
@@ -1454,6 +1537,7 @@
               <span class="text-emerald-400 font-black">タ: ${item.p}g</span>
               <span class="text-orange-400 font-bold">脂: ${item.f}g</span>
               <span class="text-yellow-300 font-bold">炭: ${item.c}g</span>
+              <span class="text-fuchsia-400 font-bold">糖: ${item.sugar || 0}g</span>
             </div>
           </div>
 
@@ -1484,10 +1568,11 @@
         protein: item.p,
         fat: item.f,
         carbs: item.c,
+        sugar: item.sugar || 0,
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       });
       saveData();
-      alert(`「${item.name}」を記録したぞ！\n【タ】${item.p}g  【脂】${item.f}g  【炭】${item.c}g (${item.cal}kcal)`);
+      alert(`「${item.name}」を記録したぞ！\n【タ】${item.p}g  【脂】${item.f}g  【炭】${item.c}g (糖:${item.sugar || 0}g)`);
     }
 
     function compressImage(file, maxWidth = 1024, quality = 0.75) {
@@ -1525,7 +1610,7 @@
       });
     }
 
-    // ★写真アップロード ＆ 最新 Gemini 3.8 Flash 解析（タ・脂・炭 3大栄養素フル取得）
+    // ★写真アップロード ＆ AI解析（タ・脂・炭・糖 完全自動推計）
     async function handleMealPhoto(e) {
       const file = e.target.files[0];
       if (!file) return;
@@ -1542,6 +1627,7 @@
             protein: 42,
             fat: 8,
             carbs: 95,
+            sugar: 6,
             cal: 650,
             time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
           };
@@ -1554,7 +1640,7 @@
 
       try {
         const compressed = await compressImage(file, 1024, 0.75);
-        const prompt = "あなたは冷徹な筋トレ栄養参謀です。この食事写真から推定される料理名、総カロリー(kcal)、タンパク質量(g)、脂質量(g)、炭水化物量(g)を推計し、次のJSON形式のみで出力してください: {\"name\": \"料理名\", \"cal\": 650, \"protein\": 40, \"fat\": 12, \"carbs\": 85}";
+        const prompt = "あなたは冷徹な筋トレ栄養参謀です。この食事・飲料の写真から推定される品名、総カロリー(kcal)、タンパク質量(g)、脂質量(g)、炭水化物量(g)、うち糖質量(g)を推計し、次のJSON形式のみで出力してください: {\"name\": \"品名\", \"cal\": 650, \"protein\": 40, \"fat\": 12, \"carbs\": 85, \"sugar\": 15}";
 
         const candidateModels = [
           'gemini-3.8-flash',
@@ -1617,10 +1703,11 @@
           protein: Number(parsed.protein) || 0,
           fat: Number(parsed.fat) || 0,
           carbs: Number(parsed.carbs) || 0,
+          sugar: Number(parsed.sugar) || 0,
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         });
         saveData();
-        alert(`AI解析成功（使用モデル: ${usedModel}）！\n【料理名】${parsed.name}\n【タ（タンパク質）】${parsed.protein}g\n【脂（脂質）】${parsed.fat || 0}g\n【炭（炭水化物）】${parsed.carbs || 0}g\n【カロリー】${parsed.cal}kcal\n食事ログに記録したぞ！`);
+        alert(`AI解析成功（使用モデル: ${usedModel}）！\n【品名】${parsed.name}\n【タ】${parsed.protein}g  【脂】${parsed.fat || 0}g  【炭】${parsed.carbs || 0}g  【糖】${parsed.sugar || 0}g\n【カロリー】${parsed.cal}kcal\n食事ログに記録したぞ！`);
       } catch (err) {
         console.error(err);
         alert(`【解析失敗】\n${err.message}`);
@@ -1630,6 +1717,7 @@
       }
     }
 
+    // ★参謀アラート（炭水化物過多 ＆ 液体糖質過多を完全迎撃）
     function renderCommanderAlerts() {
       const alertEl = document.getElementById('alertBanner');
       const remarksEl = document.getElementById('commanderRemarks');
@@ -1658,8 +1746,33 @@
         remarks.push('・昨晩の睡眠負債が深刻だ。筋肉を育てる前に神経系が死んでいる。今夜は一切の夜更かしを禁ずる。');
       }
 
-      const targetProtein = Math.round(appData.user.weight * 2.0);
       const totalP = appData.daily.meals.reduce((sum, m) => sum + (m.protein || 0), 0);
+      const totalF = appData.daily.meals.reduce((sum, m) => sum + (m.fat || 0), 0);
+      const totalC = appData.daily.meals.reduce((sum, m) => sum + (m.carbs || 0), 0);
+      const totalSugar = appData.daily.meals.reduce((sum, m) => sum + (m.sugar || 0), 0);
+      const targetProtein = Math.round(appData.user.weight * 2.0);
+
+      // ★警報①：液体糖質・ジュース過多警報（45g超え）
+      if (totalSugar >= 45) {
+        alerts.push({
+          level: 'danger',
+          title: '🥤 液体糖質・甘味過多警報',
+          text: `ジュースや単糖類の糖質が現在 ${totalSugar}g に達したぞ！急激な血糖値スパイクはインスリン抵抗性を悪化させ、筋肉の合成を阻害して内臓脂肪を爆進させる。今すぐ水かブラックコーヒーに切り替えろ！`
+        });
+        remarks.push(`・ジュース等の糖質（${totalSugar}g）が多すぎる。咀嚼しない液体糖質はただの脂肪直行便だ。毒を煽るな。`);
+      }
+
+      // ★警報②：炭水化物とりすぎ警報（380g超え）
+      if (totalC >= 380) {
+        alerts.push({
+          level: 'warning',
+          title: '🍚 炭水化物過剰（体脂肪蓄積警報）',
+          text: `炭水化物が現在 ${totalC}g だ！筋肉のグリコーゲン貯蔵タンクを超え、余剰分が体脂肪に変換され始めている。夕食以降の米・パン・麺は即座にカットしろ！`
+        });
+        remarks.push(`・炭水化物が過剰（${totalC}g）だ。運動量を超えた炭水化物はバルクアップではなく単なる肥満を招くぞ。`);
+      }
+
+      // ★警報③：タンパク質不足警報
       const pDiff = targetProtein - totalP;
       if (pDiff > 0) {
         alerts.push({
@@ -1734,7 +1847,7 @@
       const key = document.getElementById('apiKeyInput').value.trim();
       localStorage.setItem('gemini_api_key', key);
       closeApiKeyModal();
-      alert("API Keyを保存したぞ。これで食事写真からタ・脂・炭を自動解析できる。");
+      alert("API Keyを保存したぞ。これで食事写真からタ・脂・炭・糖を自動解析できる。");
     }
 
     function exportData() {
