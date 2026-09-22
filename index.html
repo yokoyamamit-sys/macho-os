@@ -73,7 +73,7 @@
           <button onclick="setWorkoutTimePreset('21:00')" class="px-3.5 py-1.5 bg-black hover:bg-zinc-800 text-xs font-black text-zinc-200 rounded-xl border border-zinc-700 active:scale-95">21:00</button>
         </div>
 
-        <!-- 1日逆算タイムライン（修正版：50分後終了即補給） -->
+        <!-- 1日逆算タイムライン -->
         <div class="pt-2 border-t-2 border-zinc-800">
           <h3 class="text-xs font-black text-zinc-400 uppercase tracking-wider mb-2">本日の行動・給餌タイムライン</h3>
           <div id="planTimelineContainer" class="space-y-2">
@@ -143,9 +143,9 @@
     </div>
 
     <!-- ========================================== -->
-    <!-- TAB 3: 食事（写真撮影 ＆ 栄養ログ） -->
+    <!-- TAB 3: 食事（写真解析 ＆ 厳選給餌カタログ） -->
     <!-- ========================================== -->
-    <div id="tab-nutrition" class="tab-pane hidden space-y-4">
+    <div id="tab-nutrition" class="tab-pane hidden space-y-5">
       
       <!-- 栄養摂取状況ゲージ -->
       <div class="bg-zinc-900 border-2 border-zinc-700 rounded-3xl p-5">
@@ -170,18 +170,50 @@
         </div>
       </div>
 
-      <!-- 写真アップロードボタン -->
-      <div class="border-2 border-dashed border-zinc-700 hover:border-emerald-500 rounded-3xl p-6 text-center bg-zinc-900/60">
-        <input type="file" id="mealImageInput" accept="image/*" capture="environment" class="hidden" onchange="handleMealPhoto(event)">
-        <label for="mealImageInput" class="cursor-pointer flex flex-col items-center gap-2.5">
-          <div class="w-16 h-16 rounded-full bg-black border-2 border-emerald-500 flex items-center justify-center text-3xl shadow-lg">
-            📸
-          </div>
-          <span class="text-base font-black text-emerald-400">食事の写真を撮る / 選択</span>
-          <span class="text-xs font-bold text-zinc-400">Gemini Flashがカロリーとタンパク質を自動判定</span>
-        </label>
-        <div id="aiLoading" class="hidden mt-3 text-sm font-black text-emerald-400 animate-pulse">
+      <!-- 写真アップロード（撮影 ＆ アルバム選択の2系統） -->
+      <div class="bg-zinc-900 border-2 border-zinc-700 rounded-3xl p-4 space-y-3">
+        <h3 class="text-xs font-black text-zinc-400 uppercase tracking-wider">食事写真AI精密解析</h3>
+        
+        <input type="file" id="mealImageCamera" accept="image/*" capture="environment" class="hidden" onchange="handleMealPhoto(event)">
+        <input type="file" id="mealImageGallery" accept="image/*" class="hidden" onchange="handleMealPhoto(event)">
+
+        <div class="grid grid-cols-2 gap-3">
+          <label for="mealImageCamera" class="cursor-pointer flex flex-col items-center justify-center p-3.5 bg-black border-2 border-zinc-700 hover:border-emerald-500 rounded-2xl active:scale-95 transition text-center">
+            <span class="text-3xl mb-1">📸</span>
+            <span class="text-sm font-black text-white">カメラで撮影</span>
+            <span class="text-[10px] font-bold text-zinc-500">今すぐ撮って判定</span>
+          </label>
+          <label for="mealImageGallery" class="cursor-pointer flex flex-col items-center justify-center p-3.5 bg-black border-2 border-zinc-700 hover:border-emerald-500 rounded-2xl active:scale-95 transition text-center">
+            <span class="text-3xl mb-1">🖼️</span>
+            <span class="text-sm font-black text-emerald-400">アルバムから選択</span>
+            <span class="text-[10px] font-bold text-zinc-500">過去の写真・スクショ</span>
+          </label>
+        </div>
+
+        <div id="aiLoading" class="hidden text-center py-2 text-sm font-black text-emerald-400 animate-pulse">
           参謀AIが写真を精密解析中...
+        </div>
+      </div>
+
+      <!-- 参謀厳選：筋肥大給餌カタログ（画像・具体量・PFC） -->
+      <div class="bg-zinc-900 border-2 border-zinc-700 rounded-3xl p-4 space-y-3">
+        <div class="flex justify-between items-center">
+          <h3 class="text-xs font-black text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
+            <span>🍽️</span> 参謀厳選：筋肥大給餌カタログ
+          </h3>
+          <span class="text-[10px] font-bold text-zinc-400">画像・分量・PFC完全版</span>
+        </div>
+
+        <!-- 給餌タイミング切り替えタブ -->
+        <div class="grid grid-cols-3 gap-1.5 p-1 bg-black rounded-xl border border-zinc-800">
+          <button onclick="switchCatalogCategory('lunch')" id="catBtn-lunch" class="py-2 text-xs font-black rounded-lg bg-emerald-500 text-black">お昼ごはん</button>
+          <button onclick="switchCatalogCategory('pre')" id="catBtn-pre" class="py-2 text-xs font-black rounded-lg text-zinc-400 hover:text-white">途中ごはん</button>
+          <button onclick="switchCatalogCategory('dinner')" id="catBtn-dinner" class="py-2 text-xs font-black rounded-lg text-zinc-400 hover:text-white">夜ごはん</button>
+        </div>
+
+        <!-- カタログカード表示エリア -->
+        <div id="catalogList" class="space-y-3 pt-1">
+          <!-- JSで自動展開 -->
         </div>
       </div>
 
@@ -399,6 +431,102 @@
       { day: 0, name: '日', label: '休', isWork: false }
     ];
 
+    // --- 参謀厳選給餌カタログデータ（画像・具体量・PFC） ---
+    const MEAL_CATALOG = {
+      lunch: [
+        {
+          name: '鶏胸肉の照り焼き定食',
+          cal: 650, p: 45, f: 9, c: 90,
+          img: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&auto=format&fit=crop&q=80',
+          volume: '皮なし鶏胸肉180g / 白米220g(中盛強) / 味噌汁(豆腐1/4丁) / ブロッコリー50g',
+          desc: '脂質を極限まで削りつつ、午後の活動エネルギーと45gのタンパク質を確保する最強の王道メニュー。'
+        },
+        {
+          name: 'サバの塩焼き定食',
+          cal: 680, p: 38, f: 18, c: 85,
+          img: 'https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=600&auto=format&fit=crop&q=80',
+          volume: 'サバ塩焼き1切れ(100g) / 白米220g / 納豆1パック / 味噌汁',
+          desc: '良質なオメガ3脂肪酸(EPA/DHA)が筋膜の炎症を抑えインスリン感受性を改善。納豆追加でP38g突破。'
+        },
+        {
+          name: '超速コンビニ定食',
+          cal: 660, p: 42, f: 12, c: 92,
+          img: 'https://images.unsplash.com/photo-1505253758473-96b3015f21c9?w=600&auto=format&fit=crop&q=80',
+          volume: '鮭おにぎり2個 / サラダチキン1個(110g) / オイコスヨーグルト1個',
+          desc: '忙しい昼休みにコンビニで1分で調達可能。咀嚼もしやすく午後の眠気を誘発しにくい。'
+        },
+        {
+          name: '牛赤身肉ステーキ定食',
+          cal: 630, p: 44, f: 13, c: 80,
+          img: 'https://images.unsplash.com/photo-1600891964092-4316c288032e?w=600&auto=format&fit=crop&q=80',
+          volume: '牛モモ赤身170g / 白米200g / 和風おろし玉ねぎソース / サラダ',
+          desc: '天然のクレアチンと鉄分・亜鉛を補給。夜のトレーニングで出力できる筋パワーの底上げを狙う。'
+        }
+      ],
+      pre: [
+        {
+          name: 'おにぎり2個＋ちくわ',
+          cal: 420, p: 18, f: 3, c: 80,
+          img: 'https://images.unsplash.com/photo-1505253758473-96b3015f21c9?w=600&auto=format&fit=crop&q=80',
+          volume: '鮭/昆布おにぎり2個(米約200g) / ちくわ2本(またはチキンバー1本)',
+          desc: 'トレ2.5時間前に完食。脂質3g以下で完全に胃を通過させ、血糖値を満タンにしてジムに入る。'
+        },
+        {
+          name: '力うどん（餅1個＋温玉）',
+          cal: 430, p: 17, f: 6, c: 78,
+          img: 'https://images.unsplash.com/photo-1618841557871-b4664fbf0cb3?w=600&auto=format&fit=crop&q=80',
+          volume: 'うどん1玉 / 切り餅1個(50g) / 温泉卵1個 / 刻みネギ',
+          desc: 'うどんと餅のダブル炭水化物は胃もたれゼロ。素早くグリコーゲンに変換され、後半セットのバテを防ぐ。'
+        },
+        {
+          name: 'バナナ2本＋プロテイン',
+          cal: 360, p: 17, f: 2, c: 68,
+          img: 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=600&auto=format&fit=crop&q=80',
+          volume: 'バナナ中2本(可食部約180g) / ホエイプロテイン15g(水割り)',
+          desc: 'デスクで音を立てずに素早く補給可能。カリウムが筋痙攣を防ぎ、フルパワーの収縮をサポートする。'
+        },
+        {
+          name: '和菓子大福＋どら焼き＋卵',
+          cal: 390, p: 14, f: 5, c: 72,
+          img: 'https://images.unsplash.com/photo-1582293041079-7814c2f12063?w=600&auto=format&fit=crop&q=80',
+          volume: '豆大福1個(約100g) / どら焼き半分 / ゆで卵1個(塩少々)',
+          desc: '小豆のポリフェノールとあんこの単糖・二糖類が即効エネルギーに。和菓子はボディビルダーの鉄板プレワークアウト食。'
+        }
+      ],
+      dinner: [
+        {
+          name: 'マグロ赤身とサーモン海鮮丼',
+          cal: 670, p: 46, f: 11, c: 95,
+          img: 'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=600&auto=format&fit=crop&q=80',
+          volume: 'マグロ赤身100g / サーモン50g / 白米250g(大盛) / 冷奴(絹ごし半丁)',
+          desc: 'トレ直後のプロテイン摂取から1時間後に投入。刺身は熱変性していない良質タンパク質。消化吸収スピードが段違い。'
+        },
+        {
+          name: '豚ヒレ肉の生姜焼き定食',
+          cal: 650, p: 44, f: 10, c: 92,
+          img: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&auto=format&fit=crop&q=80',
+          volume: '豚ヒレ肉180g / 白米250g / 玉ねぎ少々 / 具沢山豚汁(根菜・こんにゃく)',
+          desc: '豚ヒレはロースの数分の一の脂質。ビタミンB1が炭水化物の代謝を爆進させ、乳酸の分解と疲労回復を加速させる。'
+        },
+        {
+          name: '鶏むね肉と卵の親子丼',
+          cal: 680, p: 47, f: 13, c: 90,
+          img: 'https://images.unsplash.com/photo-1512058564366-18510be2db19?w=600&auto=format&fit=crop&q=80',
+          volume: '皮なし鶏胸肉160g / 卵2個(ふわとろ半熟) / 白米250g / 出汁つゆ',
+          desc: '卵の完全アミノ酸スコア100と鶏胸肉のダブル同化。夜遅い時間の食事でも胃腸に負担をかけず深睡眠を邪魔しない。'
+        },
+        {
+          name: 'チキン＋納豆2個＋大盛飯',
+          cal: 680, p: 48, f: 14, c: 88,
+          img: 'https://images.unsplash.com/photo-1505253758473-96b3015f21c9?w=600&auto=format&fit=crop&q=80',
+          volume: 'サラダチキン1個(110g) / 納豆2パック / 生卵1個 / パックご飯(250g)',
+          desc: '疲弊して帰宅しても包丁・コンロ一切不要、3分で完成。妥協なくタンパク質48gを喉へ叩き込む非常事態用メニュー。'
+        }
+      ]
+    };
+
+    let currentCatalogCategory = 'lunch';
+
     // --- 2. 状態管理（State & LocalStorage） ---
     const STORAGE_KEY = 'macho_os_data_v1';
     let appData = {
@@ -451,6 +579,7 @@
       renderPlanTimeline();
       renderWorkoutTab();
       renderNutritionTab();
+      renderCatalogList();
       renderDailyTab();
       renderCommanderAlerts();
     }
@@ -492,7 +621,7 @@
       });
     }
 
-    // 作戦タブ：1日タイムライン（修正版：50分後終了即補給）
+    // 作戦タブ：1日タイムライン
     function renderPlanTimeline() {
       const timeStr = appData.workoutStartTime || '19:00';
       document.getElementById('workoutStartTime').value = timeStr;
@@ -508,10 +637,10 @@
         return `${hh}:${mm}`;
       };
 
-      const preMeal = toTime(-150);   // 2.5h前 (トレ前食)
-      const postShake = toTime(50);   // 50分間の戦闘終了直後！(即時補給)
-      const postDinner = toTime(110); // トレ終了から1時間後 (本格夕食)
-      const sleep = toTime(240);      // 4h後 (深部体温降下)
+      const preMeal = toTime(-150);   // 2.5h前
+      const postShake = toTime(50);   // 50分後終了即
+      const postDinner = toTime(110); // 終了1h後
+      const sleep = toTime(240);      // 4h後
       const wake = toTime(240 + 450); // 7.5h後
 
       document.getElementById('planTimelineContainer').innerHTML = `
@@ -811,6 +940,77 @@
       }
     }
 
+    // 参謀給餌カタログの描画
+    function switchCatalogCategory(cat) {
+      currentCatalogCategory = cat;
+      ['lunch', 'pre', 'dinner'].forEach(c => {
+        const btn = document.getElementById(`catBtn-${c}`);
+        if (c === cat) {
+          btn.className = 'py-2 text-xs font-black rounded-lg bg-emerald-500 text-black';
+        } else {
+          btn.className = 'py-2 text-xs font-black rounded-lg text-zinc-400 hover:text-white';
+        }
+      });
+      renderCatalogList();
+    }
+
+    function renderCatalogList() {
+      const container = document.getElementById('catalogList');
+      const items = MEAL_CATALOG[currentCatalogCategory] || [];
+      container.innerHTML = '';
+
+      items.forEach((item, idx) => {
+        const card = document.createElement('div');
+        card.className = 'bg-black border-2 border-zinc-700 rounded-2xl overflow-hidden shadow-lg space-y-2.5 p-3.5';
+        card.innerHTML = `
+          <div class="relative h-32 rounded-xl overflow-hidden bg-zinc-800">
+            <img src="${item.img}" alt="${item.name}" class="w-full h-full object-cover" onerror="this.parentElement.style.display='none'">
+            <div class="absolute bottom-2 left-2 bg-black/85 backdrop-blur px-2.5 py-1 rounded-lg border border-zinc-600 text-xs font-black text-white">
+              ${item.name}
+            </div>
+          </div>
+
+          <div class="flex justify-between items-center text-xs font-black bg-zinc-900 p-2.5 rounded-xl border border-zinc-800">
+            <span class="text-yellow-400 text-sm">${item.cal} kcal</span>
+            <div class="flex gap-2">
+              <span class="text-emerald-400">P: ${item.p}g</span>
+              <span class="text-zinc-400">F: ${item.f}g</span>
+              <span class="text-zinc-300">C: ${item.c}g</span>
+            </div>
+          </div>
+
+          <div class="text-xs font-bold text-zinc-300 bg-zinc-950 p-2.5 rounded-xl border border-zinc-800/80 leading-relaxed">
+            <span class="text-[10px] font-black text-emerald-400 block mb-0.5 uppercase tracking-wider">具体的な分量・食材構成:</span>
+            ${item.volume}
+          </div>
+
+          <p class="text-[11px] font-bold text-zinc-400 px-1 leading-snug">
+            ${item.desc}
+          </p>
+
+          <button onclick="addCatalogMeal('${currentCatalogCategory}', ${idx})" class="w-full py-2 bg-zinc-800 hover:bg-zinc-700 active:scale-95 text-xs font-black text-emerald-400 border border-zinc-600 rounded-xl transition flex items-center justify-center gap-1.5">
+            <span>＋</span> この食事を本日のログに記録
+          </button>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function addCatalogMeal(cat, idx) {
+      const item = MEAL_CATALOG[cat][idx];
+      if (!item) return;
+
+      appData.daily.meals.push({
+        name: item.name,
+        cal: item.cal,
+        protein: item.p,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      });
+      saveData();
+      alert(`「${item.name}（P: ${item.p}g / ${item.cal}kcal）」を食事ログに記録したぞ！`);
+    }
+
+    // 写真アップロード ＆ Gemini Flash解析
     async function handleMealPhoto(e) {
       const file = e.target.files[0];
       if (!file) return;
@@ -864,11 +1064,13 @@
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         });
         saveData();
+        alert(`AI解析完了: ${parsed.name} (P: ${parsed.protein}g / ${parsed.cal}kcal) を登録したぞ！`);
       } catch (err) {
         console.error(err);
         alert("写真の解析に失敗した。画像が不鮮明か、APIキーが無効だ。");
       } finally {
         loader.classList.add('hidden');
+        e.target.value = '';
       }
     }
 
