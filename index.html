@@ -6,8 +6,9 @@
   <title>MachoOS - 筋肥大戦略室</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- 紙吹雪ライブラリ (Canvas Confetti) -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
   <style>
-    /* スマホアプリ風のタッチ挙動・スクロールバー非表示 */
     body { -webkit-tap-highlight-color: transparent; user-select: none; }
     ::-webkit-scrollbar { display: none; }
   </style>
@@ -28,16 +29,60 @@
   </header>
 
   <!-- 参謀の冷徹アラートエリア（動的表示） -->
-  <section id="alertBanner" class="p-3 mx-4 mt-3 rounded-xl border hidden transition-all">
-    <!-- JSで警告・指示を動的生成 -->
+  <section id="alertBanner" class="p-3 mx-4 mt-3 rounded-xl border hidden transition-all"></section>
+
+  <!-- 次回予告カード（トレーニング完了後に自動展開） -->
+  <section id="nextWorkoutCard" class="mx-4 mt-3 p-3.5 bg-gradient-to-r from-emerald-950/80 to-slate-900 border border-emerald-700/60 rounded-2xl hidden">
+    <div class="flex items-center justify-between">
+      <div>
+        <span class="text-[10px] font-black uppercase tracking-wider text-emerald-400">NEXT MISSION</span>
+        <h3 id="nextMissionTitle" class="text-sm font-black text-white mt-0.5">明日は【下半身 A】だ！</h3>
+      </div>
+      <span id="nextMissionBadge" class="text-xs px-2.5 py-1 font-bold rounded-lg bg-emerald-500 text-slate-950">戦闘予定</span>
+    </div>
+    <p id="nextMissionDesc" class="text-[11px] text-slate-300 mt-1 leading-relaxed">前ももと大腿四頭筋を完全破壊する。今夜は炭水化物と睡眠を死守しろ。</p>
   </section>
 
   <!-- メインコンテンツ領域（タブ切り替え） -->
   <main class="max-w-md mx-auto px-4 mt-3">
 
-    <!-- TAB 1: 筋トレ（週4回ローテーション） -->
+    <!-- TAB 1: 筋トレ（週4回ローテーション ＆ 作戦タイムライン） -->
     <div id="tab-workout" class="tab-pane space-y-4">
-      <div class="flex items-center justify-between">
+      
+      <!-- 週4回 推奨スケジュール表示 -->
+      <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-3">
+        <div class="flex justify-between items-center mb-2">
+          <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">週4回 推奨スプリット</span>
+          <span id="todayScheduleLabel" class="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800">本日: 戦闘推奨日</span>
+        </div>
+        <div class="grid grid-cols-7 gap-1 text-center text-[10px] font-bold" id="weeklyScheduleGrid">
+          <div class="p-1.5 rounded-lg bg-emerald-950/80 border border-emerald-800 text-emerald-300">月<br><span class="text-[9px] font-normal">上A</span></div>
+          <div class="p-1.5 rounded-lg bg-emerald-950/80 border border-emerald-800 text-emerald-300">火<br><span class="text-[9px] font-normal">下A</span></div>
+          <div class="p-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-500">水<br><span class="text-[9px] font-normal">休</span></div>
+          <div class="p-1.5 rounded-lg bg-emerald-950/80 border border-emerald-800 text-emerald-300">木<br><span class="text-[9px] font-normal">上B</span></div>
+          <div class="p-1.5 rounded-lg bg-emerald-950/80 border border-emerald-800 text-emerald-300">金<br><span class="text-[9px] font-normal">下B</span></div>
+          <div class="p-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-500">土<br><span class="text-[9px] font-normal">休</span></div>
+          <div class="p-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-500">日<br><span class="text-[9px] font-normal">休</span></div>
+        </div>
+      </div>
+
+      <!-- トレーニング予定時刻設定 ＆ 逆算タイムライン -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
+        <div class="flex items-center justify-between">
+          <label class="text-xs font-bold text-white flex items-center gap-1.5">
+            <span>⏱️</span> 本日のトレーニング開始予定
+          </label>
+          <input type="time" id="workoutStartTime" onchange="updateWorkoutTimePlan()" class="bg-slate-950 border border-slate-700 text-emerald-400 font-bold text-xs px-2.5 py-1.5 rounded-lg focus:outline-none focus:border-emerald-500">
+        </div>
+
+        <!-- 逆算タイムライン（動的生成） -->
+        <div id="timelineContainer" class="space-y-2 pt-1 border-t border-slate-800/80">
+          <!-- JSで食事・睡眠スケジュールを自動展開 -->
+        </div>
+      </div>
+
+      <!-- メニューヘッダー -->
+      <div class="flex items-center justify-between pt-1">
         <div>
           <h2 id="workoutTitle" class="text-base font-bold text-white">上半身 A：胸・背中厚み</h2>
           <p class="text-xs text-slate-400">指示通りに重量と回数をこなしてチェックを入れろ</p>
@@ -50,8 +95,9 @@
       <!-- マシンカード一覧（JS生成） -->
       <div id="exerciseList" class="space-y-3"></div>
 
-      <button onclick="completeCurrentWorkout()" class="w-full py-3.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-xl shadow-lg shadow-emerald-950/40 active:scale-[0.98] transition">
-        本日のトレーニングを完了・記録
+      <!-- トレーニング完了ボタン -->
+      <button onclick="completeCurrentWorkout()" class="w-full py-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-sm tracking-wide rounded-xl shadow-lg shadow-emerald-950/60 active:scale-[0.98] transition flex items-center justify-center gap-2">
+        <span>🔥</span> 本日のトレーニングを完了・記録
       </button>
     </div>
 
@@ -59,7 +105,6 @@
     <div id="tab-nutrition" class="tab-pane hidden space-y-4">
       <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
         <h2 class="text-base font-bold text-white mb-2">本日の栄養摂取状況</h2>
-        <!-- タンパク質ゲージ -->
         <div class="space-y-1 mb-3">
           <div class="flex justify-between text-xs font-semibold">
             <span class="text-slate-400">タンパク質 (目標: <span id="targetProteinText">140</span>g)</span>
@@ -69,7 +114,6 @@
             <div id="proteinBar" class="bg-emerald-500 h-full w-0 transition-all duration-500"></div>
           </div>
         </div>
-        <!-- カロリーゲージ -->
         <div class="space-y-1">
           <div class="flex justify-between text-xs font-semibold">
             <span class="text-slate-400">総カロリー (目安: <span id="targetCalText">2400</span>kcal)</span>
@@ -81,7 +125,6 @@
         </div>
       </div>
 
-      <!-- 写真アップロードボタン -->
       <div class="border-2 border-dashed border-slate-800 rounded-2xl p-6 text-center bg-slate-900/50">
         <input type="file" id="mealImageInput" accept="image/*" capture="environment" class="hidden" onchange="handleMealPhoto(event)">
         <label for="mealImageInput" class="cursor-pointer flex flex-col items-center gap-2">
@@ -96,7 +139,6 @@
         </div>
       </div>
 
-      <!-- 食事ログリスト -->
       <div class="space-y-2">
         <h3 class="text-xs font-bold text-slate-400 tracking-wider uppercase">本日の食事ログ</h3>
         <div id="mealLogs" class="space-y-2">
@@ -107,7 +149,6 @@
 
     <!-- TAB 3: デイリー（身体スペック・睡眠） -->
     <div id="tab-daily" class="tab-pane hidden space-y-4">
-      <!-- 身体スペック -->
       <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
         <h2 class="text-base font-bold text-white">身体スペック</h2>
         <div class="grid grid-cols-2 gap-3">
@@ -124,13 +165,11 @@
         </div>
       </div>
 
-      <!-- 睡眠入力 -->
       <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
         <div class="flex justify-between items-center">
           <h2 class="text-base font-bold text-white">昨晩の睡眠時間</h2>
           <span id="sleepStatusLabel" class="text-xs font-semibold px-2 py-0.5 rounded bg-slate-800 text-slate-300">未選択</span>
         </div>
-        <!-- 睡眠チップ一覧（5.5h未満対応） -->
         <div class="grid grid-cols-3 gap-2" id="sleepChips">
           <button onclick="setSleep(5.0)" class="sleep-chip py-2.5 rounded-xl border border-slate-700 text-xs font-bold bg-slate-950 text-slate-300 hover:border-red-500" data-hours="5.0">〜5.5h</button>
           <button onclick="setSleep(6.0)" class="sleep-chip py-2.5 rounded-xl border border-slate-700 text-xs font-bold bg-slate-950 text-slate-300 hover:border-amber-500" data-hours="6.0">6.0h</button>
@@ -140,7 +179,6 @@
           <button onclick="setSleep(8.0)" class="sleep-chip py-2.5 rounded-xl border border-slate-700 text-xs font-bold bg-slate-950 text-slate-300 hover:border-emerald-500" data-hours="8.0">8.0h+</button>
         </div>
 
-        <!-- 就寝前ストレッチトグル -->
         <label class="flex items-center justify-between p-3 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer mt-3">
           <span class="text-xs font-semibold text-slate-300">就寝前の静的ストレッチ完了</span>
           <input type="checkbox" id="stretchCheck" onchange="toggleStretch()" class="w-4 h-4 accent-emerald-500 rounded">
@@ -154,26 +192,20 @@
         <h2 class="text-base font-bold text-white flex items-center gap-2">
           <span>💀</span> 参謀の冷徹総括
         </h2>
-        <div id="commanderRemarks" class="text-xs leading-relaxed text-slate-300 space-y-2 bg-slate-950 p-3 rounded-xl border border-slate-800">
-          <!-- JSで自動判定 -->
-        </div>
+        <div id="commanderRemarks" class="text-xs leading-relaxed text-slate-300 space-y-2 bg-slate-950 p-3 rounded-xl border border-slate-800"></div>
       </div>
 
-      <!-- データ管理（エクスポート ＆ インポート） -->
       <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
         <h3 class="text-xs font-bold text-slate-400">データ保全・復元</h3>
-        
         <div class="grid grid-cols-2 gap-2">
           <button onclick="exportData()" class="py-2.5 bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-200 rounded-xl border border-slate-700 active:scale-95 flex items-center justify-center gap-1.5">
             <span>💾</span> JSON書き出し
           </button>
-          
           <label class="py-2.5 bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-200 rounded-xl border border-slate-700 active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer text-center">
             <span>📂</span> JSON復元
             <input type="file" id="importFileInput" accept=".json" class="hidden" onchange="importData(event)">
           </label>
         </div>
-
         <button onclick="resetTodayData()" class="w-full py-2 bg-red-950/40 hover:bg-red-950/80 text-red-300 text-[11px] font-semibold rounded-lg border border-red-900/60 transition">
           本日の記録のみ初期化
         </button>
@@ -204,6 +236,24 @@
     </div>
   </nav>
 
+  <!-- 祝福モーダル (祝賀・労い演出) -->
+  <div id="congratsModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 hidden">
+    <div class="bg-gradient-to-b from-slate-900 to-slate-950 border-2 border-emerald-500 rounded-3xl p-6 max-w-xs w-full text-center space-y-4 shadow-2xl shadow-emerald-500/30">
+      <div class="text-5xl animate-bounce">🏆</div>
+      <div>
+        <span class="text-[11px] font-bold uppercase tracking-widest text-emerald-400">Mission Accomplished</span>
+        <h3 class="text-xl font-black text-white mt-1">本日のトレーニング終了！</h3>
+        <p class="text-xs text-emerald-300 font-bold mt-1">よくやりきったな、りょう！</p>
+      </div>
+      <div class="text-xs text-slate-300 bg-slate-900/80 p-3 rounded-xl border border-slate-800 leading-relaxed text-left">
+        今日の筋線維破壊ミッションは完璧に完遂した。だが勝負はここからだ。30分以内にプロテインを胃に流し込み、今夜は7時間以上寝て超回復させろ！
+      </div>
+      <button onclick="closeCongratsModal()" class="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-sm rounded-xl active:scale-95 transition">
+        了解！栄養補給へ向かう ❯
+      </button>
+    </div>
+  </div>
+
   <!-- Gemini API Key モーダル -->
   <div id="apiModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 max-w-xs w-full space-y-3">
@@ -224,6 +274,7 @@
         id: 'upperA',
         title: '上半身 A',
         sub: '胸・背中厚みメイン',
+        nextDesc: '胸と背中の厚みを作る。チェストプレスとローイングで限界まで追い込め。',
         exercises: [
           { name: 'チェストプレス', defaultWeight: 60, reps: 10, sets: 3, step: 2.5 },
           { name: 'シーテッド・ケーブルロー', defaultWeight: 50, reps: 12, sets: 3, step: 2.5 },
@@ -236,6 +287,7 @@
         id: 'lowerA',
         title: '下半身 A',
         sub: '前もも・大腿四頭筋メイン',
+        nextDesc: '前ももと大腿四頭筋を完全破壊する。レッグプレスで土台を叩き上げろ。',
         exercises: [
           { name: 'レッグプレス (足幅広め)', defaultWeight: 100, reps: 10, sets: 3, step: 5.0 },
           { name: 'レッグエクステンション', defaultWeight: 45, reps: 12, sets: 3, step: 2.5 },
@@ -247,6 +299,7 @@
         id: 'upperB',
         title: '上半身 B',
         sub: '背中広がり・肩・腕メイン',
+        nextDesc: '逆三角形の広がりとメロン肩を削り出す。ラットプルとサイドレイズが主役だ。',
         exercises: [
           { name: 'ラットプルダウン', defaultWeight: 55, reps: 10, sets: 3, step: 2.5 },
           { name: 'インクライン・チェストプレス', defaultWeight: 50, reps: 10, sets: 3, step: 2.5 },
@@ -259,6 +312,7 @@
         id: 'lowerB',
         title: '下半身 B',
         sub: 'もも裏・臀部メイン',
+        nextDesc: 'もも裏（ハムストリングス）と臀部を仕留める。脚の立体感を完成させろ。',
         exercises: [
           { name: 'レッグプレス (足位置高め)', defaultWeight: 110, reps: 10, sets: 3, step: 5.0 },
           { name: 'レッグカール (集中)', defaultWeight: 45, reps: 12, sets: 3, step: 2.5 },
@@ -274,11 +328,13 @@
       user: { height: 175, weight: 70.0, prevWeight: 70.0 },
       currentPhaseIdx: 0,
       workoutHistory: {},
-      lastBackupDate: '', // 最後にバックアップした日付
+      workoutStartTime: '19:00', // トレ予定時刻
+      lastBackupDate: '',
       daily: {
         date: new Date().toISOString().split('T')[0],
         sleepHours: 7.0,
         didStretch: false,
+        isCompletedToday: false, // 本日完了フラグ
         completedExercises: {},
         meals: []
       }
@@ -297,6 +353,7 @@
               date: today,
               sleepHours: 7.0,
               didStretch: false,
+              isCompletedToday: false,
               completedExercises: {},
               meals: []
             };
@@ -317,12 +374,30 @@
       renderNutritionTab();
       renderDailyTab();
       renderCommanderAlerts();
+      renderNextMissionCard();
     }
 
+    // 筋トレタブの描画
     function renderWorkoutTab() {
       const routine = ROUTINES[appData.currentPhaseIdx];
       document.getElementById('currentPhaseBadge').innerText = routine.title;
       document.getElementById('workoutTitle').innerText = `${routine.title}：${routine.sub}`;
+      document.getElementById('workoutStartTime').value = appData.workoutStartTime || '19:00';
+
+      // 週間推奨曜日のハイライト判定 (0:日, 1:月, 2:火, 3:水, 4:木, 5:金, 6:土)
+      const dayOfWeek = new Date().getDay();
+      const isRecommendedDay = [1, 2, 4, 5].includes(dayOfWeek); // 月・火・木・金
+      const todayLabel = document.getElementById('todayScheduleLabel');
+      if (isRecommendedDay) {
+        todayLabel.className = 'text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800';
+        todayLabel.innerText = '本日: 戦闘推奨日（筋肥大）';
+      } else {
+        todayLabel.className = 'text-[10px] font-bold px-2 py-0.5 rounded bg-blue-950 text-blue-300 border border-blue-800';
+        todayLabel.innerText = '本日: 超回復推奨日（OFF）';
+      }
+
+      // 逆算タイムラインの描画
+      renderTimeline();
 
       const isSleepDeprived = appData.daily.sleepHours < 5.5;
       const listEl = document.getElementById('exerciseList');
@@ -370,6 +445,56 @@
       });
     }
 
+    // 逆算タイムライン計算関数
+    function renderTimeline() {
+      const container = document.getElementById('timelineContainer');
+      const timeStr = appData.workoutStartTime || '19:00';
+      const [h, m] = timeStr.split(':').map(Number);
+
+      const toTime = (offsetMins) => {
+        let total = (h * 60 + m + offsetMins + 1440) % 1440;
+        let hh = Math.floor(total / 60).toString().padStart(2, '0');
+        let mm = (total % 60).toString().padStart(2, '0');
+        return `${hh}:${mm}`;
+      };
+
+      const preMealTime = toTime(-150);     // 2.5時間前
+      const postShakeTime = toTime(40);     // トレ終了直後(40分後)
+      const postDinnerTime = toTime(90);    // 1.5時間後
+      const sleepTime = toTime(240);        // 4時間後 (深部体温下降)
+      const wakeTime = toTime(240 + 450);   // 7.5時間睡眠
+
+      container.innerHTML = `
+        <div class="grid grid-cols-1 gap-1.5 text-[11px]">
+          <div class="flex items-center justify-between p-2 rounded-xl bg-slate-950 border border-slate-800/80">
+            <span class="font-bold text-amber-400">🍚 ${preMealTime} (トレ前食)</span>
+            <span class="text-slate-300 text-[10px]">複合炭水化物(米/バナナ)＋軽P</span>
+          </div>
+          <div class="flex items-center justify-between p-2 rounded-xl bg-emerald-950/40 border border-emerald-800/50">
+            <span class="font-black text-emerald-400">🏋️ ${timeStr} (戦闘開始)</span>
+            <span class="text-emerald-300 text-[10px]">50分集中・水分補給</span>
+          </div>
+          <div class="flex items-center justify-between p-2 rounded-xl bg-slate-950 border border-slate-800/80">
+            <span class="font-bold text-emerald-400">🥤 ${postShakeTime} (直後補給)</span>
+            <span class="text-slate-300 text-[10px]">プロテイン30g＋即効性糖質</span>
+          </div>
+          <div class="flex items-center justify-between p-2 rounded-xl bg-slate-950 border border-slate-800/80">
+            <span class="font-bold text-slate-300">🍽️ ${postDinnerTime} (夕食)</span>
+            <span class="text-slate-400 text-[10px]">高タンパク・中糖質・低脂質</span>
+          </div>
+          <div class="flex items-center justify-between p-2 rounded-xl bg-indigo-950/40 border border-indigo-800/50">
+            <span class="font-black text-indigo-300">🌙 ${sleepTime} (推奨就寝)</span>
+            <span class="text-indigo-200 text-[10px]">7.5h睡眠 ➔ ${wakeTime}起床目標</span>
+          </div>
+        </div>
+      `;
+    }
+
+    function updateWorkoutTimePlan() {
+      appData.workoutStartTime = document.getElementById('workoutStartTime').value;
+      saveData();
+    }
+
     function toggleExercise(name) {
       if (appData.daily.completedExercises[name]) {
         delete appData.daily.completedExercises[name];
@@ -394,11 +519,72 @@
       saveData();
     }
 
+    // トレーニング完了処理 (紙吹雪 ＆ 祝福モーダル発火)
     function completeCurrentWorkout() {
-      alert("本日のトレーニングを記録したぞ！超回復のためにタンパク質を流し込め！");
+      // 1. 紙吹雪をぶち上げる
+      if (typeof confetti === 'function') {
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 }
+        });
+        setTimeout(() => {
+          confetti({
+            particleCount: 50,
+            angle: 60,
+            spread: 55,
+            origin: { x: 0 }
+          });
+          confetti({
+            particleCount: 50,
+            angle: 120,
+            spread: 55,
+            origin: { x: 1 }
+          });
+        }, 250);
+      }
+
+      // 2. 本日完了フラグを立てて次フェーズへ進める
+      appData.daily.isCompletedToday = true;
       advanceWorkoutPhase();
+
+      // 3. 祝福モーダルを開く
+      document.getElementById('congratsModal').classList.remove('hidden');
     }
 
+    function closeCongratsModal() {
+      document.getElementById('congratsModal').classList.add('hidden');
+    }
+
+    // 次回予告カードの表示制御
+    function renderNextMissionCard() {
+      const card = document.getElementById('nextWorkoutCard');
+      if (!appData.daily.isCompletedToday) {
+        card.classList.add('hidden');
+        return;
+      }
+
+      card.classList.remove('hidden');
+      const nextRoutine = ROUTINES[appData.currentPhaseIdx];
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const tomorrowDay = tomorrow.getDay();
+      const isTomorrowRest = ![1, 2, 4, 5].includes(tomorrowDay); // 明日が水・土・日なら休み
+
+      if (isTomorrowRest) {
+        document.getElementById('nextMissionTitle').innerText = '明日は【完全休養（OFF）】だ！';
+        document.getElementById('nextMissionBadge').innerText = '超回復日';
+        document.getElementById('nextMissionBadge').className = 'text-xs px-2.5 py-1 font-bold rounded-lg bg-blue-500 text-slate-950';
+        document.getElementById('nextMissionDesc').innerText = '筋肉はジムではなくベッドの上で育つ。明日はトレーニングを休み、タンパク質補給と関節の休養に徹しろ。';
+      } else {
+        document.getElementById('nextMissionTitle').innerText = `明日は【${nextRoutine.title}】だ！`;
+        document.getElementById('nextMissionBadge').innerText = '戦闘予定';
+        document.getElementById('nextMissionBadge').className = 'text-xs px-2.5 py-1 font-bold rounded-lg bg-emerald-500 text-slate-950';
+        document.getElementById('nextMissionDesc').innerText = nextRoutine.nextDesc;
+      }
+    }
+
+    // デイリータブ（身体スペック・睡眠）
     function renderDailyTab() {
       document.getElementById('inputWeight').value = appData.user.weight || 70.0;
       document.getElementById('inputHeight').value = appData.user.height || 175;
@@ -440,6 +626,7 @@
       saveData();
     }
 
+    // 食事タブの描画
     function renderNutritionTab() {
       const targetProtein = Math.round(appData.user.weight * 2.0);
       const targetCal = Math.round(appData.user.weight * 33);
@@ -564,7 +751,6 @@
       const isSunday = today.getDay() === 0;
       const todayStr = today.toISOString().split('T')[0];
 
-      // 特殊判定：日曜定期バックアップ催促
       if (isSunday && appData.lastBackupDate !== todayStr) {
         alerts.unshift({
           level: 'backup',
@@ -574,7 +760,6 @@
         });
       }
 
-      // 判定1: 睡眠不足（非常事態）
       if (appData.daily.sleepHours < 5.5) {
         alerts.push({
           level: 'danger',
@@ -584,7 +769,6 @@
         remarks.push('・昨晩の睡眠負債が深刻だ。筋肉を育てる前に神経系が死んでいる。今夜は一切の夜更かしを禁ずる。');
       }
 
-      // 判定2: タンパク質不足
       const targetProtein = Math.round(appData.user.weight * 2.0);
       const totalP = appData.daily.meals.reduce((sum, m) => sum + (m.protein || 0), 0);
       const pDiff = targetProtein - totalP;
@@ -599,12 +783,10 @@
         remarks.push('・タンパク質ノルマは達成済みだ。余計な脂質を摂りすぎず安静にしろ。');
       }
 
-      // 判定3: 就寝前ストレッチ
       if (!appData.daily.didStretch) {
         remarks.push('・就寝前の静的ストレッチが未完了だ。筋膜が固まり副交感神経の切り替えが遅れるぞ。');
       }
 
-      // アラートバナーの表示更新
       if (alerts.length > 0) {
         const topAlert = alerts[0];
         let colorClass = 'bg-amber-950/60 border-amber-800 text-amber-200';
@@ -624,7 +806,6 @@
       remarksEl.innerHTML = remarks.map(r => `<p>${r}</p>`).join('');
     }
 
-    // 日曜クイックバックアップ
     function quickBackup() {
       exportData();
       appData.lastBackupDate = new Date().toISOString().split('T')[0];
@@ -662,7 +843,6 @@
       alert("API Keyを保存したぞ。これで食事写真からPFCを自動解析できる。");
     }
 
-    // JSONエクスポート
     function exportData() {
       const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData, null, 2));
       const a = document.createElement('a');
@@ -671,7 +851,6 @@
       a.click();
     }
 
-    // JSONインポート（復元）
     function importData(event) {
       const file = event.target.files[0];
       if (!file) return;
@@ -703,6 +882,7 @@
     function resetTodayData() {
       if (confirm("本日の食事・筋トレチェックをリセットするか？")) {
         appData.daily.completedExercises = {};
+        appData.daily.isCompletedToday = false;
         appData.daily.meals = [];
         saveData();
       }
