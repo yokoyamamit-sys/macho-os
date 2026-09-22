@@ -267,11 +267,11 @@
         </div>
       </div>
 
-      <!-- 写真アップロード -->
+      <!-- 写真アップロード（Gemini 3.8 Flash 実戦直撃仕様） -->
       <div class="bg-zinc-900 border-2 border-zinc-700 rounded-3xl p-4 space-y-3">
         <div class="flex justify-between items-center">
           <h3 class="text-xs font-black text-zinc-400 uppercase tracking-wider">食事写真AI精密解析</h3>
-          <span id="activeModelTag" class="text-[10px] font-black text-emerald-400 bg-black px-2 py-0.5 rounded border border-zinc-800">最新Flash自動適応中</span>
+          <span id="activeModelTag" class="text-[10px] font-black text-emerald-400 bg-black px-2 py-0.5 rounded border border-zinc-800">Gemini 3.8 Flash 装填中</span>
         </div>
         
         <input type="file" id="mealImageCamera" accept="image/*" capture="environment" class="hidden" onchange="handleMealPhoto(event)">
@@ -291,7 +291,7 @@
         </div>
 
         <div id="aiLoading" class="hidden text-center py-2 text-sm font-black text-emerald-400 animate-pulse">
-          稼働中の最新モデルを自動検知して解析中...
+          Gemini 3.8 Flash が写真を精密解析中...
         </div>
       </div>
 
@@ -344,7 +344,7 @@
         </div>
       </div>
 
-      <!-- ★期間切り替えセレクター（年間スパン対応） -->
+      <!-- 期間切り替えセレクター -->
       <div class="bg-zinc-900 border-2 border-zinc-700 rounded-3xl p-3.5 space-y-2">
         <div class="flex justify-between items-center px-1">
           <span class="text-xs font-black text-zinc-300 uppercase tracking-wider">分析観測スパン</span>
@@ -358,7 +358,7 @@
         </div>
       </div>
 
-      <!-- ★体重推移グラフ（年間トレンド対応） -->
+      <!-- 体重推移グラフ -->
       <div class="bg-zinc-900 border-2 border-zinc-700 rounded-3xl p-5 space-y-3">
         <div class="flex justify-between items-center">
           <h3 class="text-sm font-black text-white flex items-center gap-1.5">
@@ -371,7 +371,7 @@
         </div>
       </div>
 
-      <!-- ★カロリー収支グラフ（年間集約対応） -->
+      <!-- カロリー収支グラフ -->
       <div class="bg-zinc-900 border-2 border-zinc-700 rounded-3xl p-5 space-y-3">
         <div class="flex justify-between items-center">
           <h3 class="text-sm font-black text-white flex items-center gap-1.5">
@@ -386,7 +386,7 @@
           <canvas id="calorieChart" height="200"></canvas>
         </div>
         <p id="calorieChartDesc" class="text-[11px] font-bold text-zinc-400 text-center">
-          ※1年間スパンでは月間平均カロリー推移を表示
+          ※1年間スパンでは月別平均カロリー推移を表示
         </p>
       </div>
 
@@ -500,7 +500,7 @@
   <div id="apiModal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 hidden">
     <div class="bg-zinc-900 border-2 border-zinc-700 rounded-3xl p-5 max-w-xs w-full space-y-3">
       <h3 class="text-base font-black text-white">Gemini API Key 設定</h3>
-      <p class="text-xs font-bold text-zinc-300">キーはブラウザにのみ安全に保存されます。モデルはGoogleの稼働状況から完全自動検出されます。</p>
+      <p class="text-xs font-bold text-zinc-300">キーはブラウザにのみ安全に保存されます。最新の Gemini 3.8 Flash へ直結します。</p>
       <input type="password" id="apiKeyInput" placeholder="AIzaSy..." class="w-full bg-black border-2 border-zinc-600 rounded-xl px-3 py-2.5 text-sm text-white focus:border-emerald-500">
       <div class="flex gap-2 justify-end pt-2">
         <button onclick="closeApiKeyModal()" class="px-3 py-2 text-xs font-bold text-zinc-400">キャンセル</button>
@@ -669,7 +669,7 @@
 
     let currentCatalogCategory = 'lunch';
     let selectedPlanDay = new Date().getDay();
-    let currentChartSpan = '1y'; // デフォルトは年間スパン！('7d' | '30d' | '90d' | '1y')
+    let currentChartSpan = '1y';
 
     // --- 2. 状態管理（State & LocalStorage） ---
     const STORAGE_KEY = 'macho_os_data_v1';
@@ -759,7 +759,6 @@
       renderCommanderAlerts();
     }
 
-    // 作戦タブ：7曜日切り替え
     function renderScheduleGrid() {
       const gridEl = document.getElementById('weeklyScheduleGrid');
       const badgeEl = document.getElementById('todayScheduleBadge');
@@ -932,7 +931,6 @@
       saveData();
     }
 
-    // --- ★期間切り替え（7d, 30d, 90d, 1y）制御 ---
     function setChartSpan(span) {
       currentChartSpan = span;
       ['7d', '30d', '90d', '1y'].forEach(s => {
@@ -969,7 +967,6 @@
       renderCharts();
     }
 
-    // --- ★グラフ描画エンジン (Chart.js：日次〜年間対応) ---
     function renderCharts() {
       let daysCount = 7;
       if (currentChartSpan === '30d') daysCount = 30;
@@ -981,7 +978,6 @@
       const intakeData = [];
       const burnData = [];
 
-      // 1. 日次データの抽出（過去 daysCount 日分）
       for (let i = daysCount - 1; i >= 0; i--) {
         const d = new Date();
         d.setDate(d.getDate() - i);
@@ -989,7 +985,7 @@
         
         let label = `${d.getMonth() + 1}/${d.getDate()}`;
         if (currentChartSpan === '1y' && i % 30 !== 0 && i !== 0) {
-          label = ''; // 年間時は軸ラベルを適度に間引く
+          label = '';
         }
 
         dateLabels.push(label);
@@ -1008,7 +1004,6 @@
         burnData.push(burn);
       }
 
-      // 2. 体重推移グラフ（年間時はポイント非表示で滑らかな曲線）
       const ctxWeight = document.getElementById('weightChart');
       if (ctxWeight) {
         if (weightChartInstance) weightChartInstance.destroy();
@@ -1025,10 +1020,10 @@
             datasets: [{
               label: '体重 (kg)',
               data: weightData,
-              borderColor: '#10b981', // emerald-500
+              borderColor: '#10b981',
               backgroundColor: 'rgba(16, 185, 129, 0.15)',
               borderWidth: isLongSpan ? 2 : 3,
-              pointRadius: isLongSpan ? 0 : 4, // 長期は点を消して美しいトレンドラインに
+              pointRadius: isLongSpan ? 0 : 4,
               pointHoverRadius: 6,
               pointBackgroundColor: '#ffffff',
               pointBorderColor: '#10b981',
@@ -1060,7 +1055,6 @@
         });
       }
 
-      // 3. カロリー収支グラフ（年間時は月別平均・3ヶ月は週別平均に自動集約）
       const ctxCal = document.getElementById('calorieChart');
       if (ctxCal) {
         if (calorieChartInstance) calorieChartInstance.destroy();
@@ -1070,7 +1064,6 @@
         let finalBurn = [];
 
         if (currentChartSpan === '1y') {
-          // 12ヶ月分に集約
           const months = {};
           for (let i = 364; i >= 0; i--) {
             const d = new Date();
@@ -1090,14 +1083,13 @@
           }
 
           Object.keys(months).forEach(m => {
-            calLabels.push(m.split('/')[1]); // "9月"
+            calLabels.push(m.split('/')[1]);
             const avgIn = months[m].intake.length ? Math.round(months[m].intake.reduce((a, b) => a + b, 0) / months[m].intake.length) : 0;
             const avgOut = Math.round(months[m].burn.reduce((a, b) => a + b, 0) / months[m].burn.length);
             finalIntake.push(avgIn);
             finalBurn.push(avgOut);
           });
         } else if (currentChartSpan === '90d') {
-          // 12週分に集約
           const weeks = 12;
           for (let w = weeks - 1; w >= 0; w--) {
             calLabels.push(`${weeks - w}週前`);
@@ -1113,7 +1105,6 @@
             finalBurn.push(Math.round(sumOut / 7));
           }
         } else {
-          // 7日 / 30日 は日次そのまま
           calLabels = dateLabels;
           finalIntake = intakeData;
           finalBurn = burnData;
@@ -1127,13 +1118,13 @@
               {
                 label: '摂取カロリー',
                 data: finalIntake,
-                backgroundColor: '#facc15', // yellow-400
+                backgroundColor: '#facc15',
                 borderRadius: 4
               },
               {
                 label: '推定消費カロリー',
                 data: finalBurn,
-                backgroundColor: '#22d3ee', // cyan-400
+                backgroundColor: '#22d3ee',
                 borderRadius: 4
               }
             ]
@@ -1520,26 +1511,7 @@
       });
     }
 
-    async function discoverBestFlashModel(apiKey) {
-      try {
-        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
-        if (!res.ok) throw new Error(`モデル一覧取得失敗 (HTTP ${res.status})`);
-        
-        const data = await res.json();
-        const models = data.models || [];
-
-        const capable = models.filter(m => m.supportedGenerationMethods && m.supportedGenerationMethods.includes('generateContent'));
-        const flashModels = capable.filter(m => m.name.toLowerCase().includes('flash'));
-        const targetPool = flashModels.length > 0 ? flashModels : capable;
-
-        targetPool.sort((a, b) => b.name.localeCompare(a.name));
-        return targetPool[0].name.replace(/^models\//, '');
-      } catch (err) {
-        console.warn("動的モデル取得失敗。既定モデルで出撃:", err);
-        return 'gemini-3.8-flash';
-      }
-    }
-
+    // ★無料枠が確実に使える正規モデルのみを直撃する解析処理（地雷omni完全排除）
     async function handleMealPhoto(e) {
       const file = e.target.files[0];
       if (!file) return;
@@ -1566,38 +1538,63 @@
 
       try {
         const compressed = await compressImage(file, 1024, 0.75);
-        const activeModel = await discoverBestFlashModel(apiKey);
-        document.getElementById('activeModelTag').innerText = `接続中: ${activeModel}`;
-
         const prompt = "あなたは冷徹な筋トレ栄養参謀です。この食事写真から推定される料理名、総カロリー(kcal)、タンパク質量(g)を推計し、次のJSON形式のみで出力してください: {\"name\": \"料理名\", \"cal\": 650, \"protein\": 40}";
 
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${activeModel}:generateContent?key=${apiKey}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{
-              parts: [
-                { text: prompt },
-                { inline_data: { mime_type: compressed.mimeType, data: compressed.base64Data } }
-              ]
-            }]
-          })
-        });
+        // Google AI Studioで無料枠が確実に割り当てられている正規モデル軍
+        const candidateModels = [
+          'gemini-3.8-flash',
+          'gemini-3.5-flash-lite',
+          'gemini-2.5-flash'
+        ];
 
-        if (!response.ok) {
-          const errRes = await response.json().catch(() => ({}));
-          const errMsg = errRes.error?.message || response.statusText;
-          throw new Error(`[${activeModel}] HTTP ${response.status}: ${errMsg}`);
+        let lastError = null;
+        let parsed = null;
+        let usedModel = '';
+
+        for (const model of candidateModels) {
+          try {
+            document.getElementById('activeModelTag').innerText = `解析中: ${model}`;
+
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                contents: [{
+                  parts: [
+                    { text: prompt },
+                    { inline_data: { mime_type: compressed.mimeType, data: compressed.base64Data } }
+                  ]
+                }]
+              })
+            });
+
+            if (!response.ok) {
+              const errRes = await response.json().catch(() => ({}));
+              const errMsg = errRes.error?.message || response.statusText;
+              throw new Error(`[${model}] HTTP ${response.status}: ${errMsg}`);
+            }
+
+            const resJson = await response.json();
+            const textResp = resJson.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (!textResp) throw new Error(`[${model}] AIからテキスト応答がありませんでした。`);
+
+            const jsonMatch = textResp.match(/\{[\s\S]*\}/);
+            if (!jsonMatch) throw new Error(`[${model}] JSON抽出失敗: ${textResp}`);
+
+            parsed = JSON.parse(jsonMatch[0]);
+            usedModel = model;
+            break; // 成功したので即脱出！
+          } catch (err) {
+            console.warn(`モデル ${model} でのエラー:`, err);
+            lastError = err;
+          }
         }
 
-        const resJson = await response.json();
-        const textResp = resJson.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (!textResp) throw new Error("AIからテキスト応答がありませんでした。");
+        if (!parsed) {
+          throw lastError || new Error("利用可能なGeminiモデルで解析に失敗しました。");
+        }
 
-        const jsonMatch = textResp.match(/\{[\s\S]*\}/);
-        if (!jsonMatch) throw new Error("JSON抽出失敗: " + textResp);
-
-        const parsed = JSON.parse(jsonMatch[0]);
+        document.getElementById('activeModelTag').innerText = `接続中: ${usedModel}`;
 
         appData.daily.meals.push({
           name: parsed.name || '食事記録',
@@ -1606,7 +1603,7 @@
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         });
         saveData();
-        alert(`AI解析成功（使用モデル: ${activeModel}）！\n【料理名】${parsed.name}\n【タンパク質】${parsed.protein}g\n【カロリー】${parsed.cal}kcal\n食事ログに記録したぞ！`);
+        alert(`AI解析成功（使用モデル: ${usedModel}）！\n【料理名】${parsed.name}\n【タンパク質】${parsed.protein}g\n【カロリー】${parsed.cal}kcal\n食事ログに記録したぞ！`);
       } catch (err) {
         console.error(err);
         alert(`【解析失敗】\n${err.message}`);
@@ -1616,6 +1613,7 @@
       }
     }
 
+    // 参謀アラート
     function renderCommanderAlerts() {
       const alertEl = document.getElementById('alertBanner');
       const remarksEl = document.getElementById('commanderRemarks');
