@@ -95,7 +95,7 @@
           <span class="text-xs px-2.5 py-0.5 rounded-full bg-cyan-400 text-black font-black">トレーニングなし</span>
         </div>
         <p class="text-xs font-bold text-zinc-300 leading-relaxed bg-black p-3.5 rounded-2xl border border-zinc-700">
-          筋肉はジムではなくベッドの上で育つ。本日は内臓疲労の回復と神経系の修復に特化し、余計な糖質を抑えてタンパク質を一定間隔で補給しろ。
+          筋肉はジムではなくベッドの上で育つ。本日は内臓疲労の回復と神経系の修復に特化し、余計な脂質・糖質を抑えてタンパク質を一定間隔で補給しろ。
         </p>
 
         <div class="space-y-2 pt-1 border-t border-zinc-800">
@@ -112,7 +112,7 @@
           <div class="p-3 rounded-2xl bg-black border border-zinc-700 flex justify-between items-center">
             <div>
               <span class="text-xs font-black text-yellow-400">🍱 12:00〜13:00 昼食</span>
-              <div class="text-sm font-black text-white">高タンパク定食（P: 40g / 白米200g）</div>
+              <div class="text-sm font-black text-white">高タンパク定食（タ: 40g / 白米200g）</div>
             </div>
             <span class="text-xs font-bold text-yellow-300">筋分解防止</span>
           </div>
@@ -244,12 +244,15 @@
     <!-- ========================================== -->
     <div id="tab-nutrition" class="tab-pane hidden space-y-5">
       
-      <!-- 栄養摂取状況ゲージ -->
+      <!-- 栄養摂取状況ゲージ（タ・脂・炭表記） -->
       <div class="bg-zinc-900 border-2 border-zinc-700 rounded-3xl p-5">
         <h2 class="text-base font-black text-white mb-3">本日の栄養摂取状況</h2>
         <div class="space-y-1.5 mb-4">
           <div class="flex justify-between text-sm font-black">
-            <span class="text-zinc-300">タンパク質 (目標: <span id="targetProteinText">140</span>g)</span>
+            <span class="text-zinc-300 flex items-center gap-1.5">
+              <span class="px-1.5 py-0.5 rounded bg-emerald-500 text-black text-xs font-black">タ</span>
+              タンパク質 (目標: <span id="targetProteinText">140</span>g)
+            </span>
             <span id="currentProteinText" class="text-emerald-400 text-base">0g</span>
           </div>
           <div class="w-full bg-black h-3.5 rounded-full overflow-hidden border border-zinc-700">
@@ -267,7 +270,7 @@
         </div>
       </div>
 
-      <!-- 写真アップロード（Gemini 3.8 Flash 実戦直撃仕様） -->
+      <!-- 写真アップロード -->
       <div class="bg-zinc-900 border-2 border-zinc-700 rounded-3xl p-4 space-y-3">
         <div class="flex justify-between items-center">
           <h3 class="text-xs font-black text-zinc-400 uppercase tracking-wider">食事写真AI精密解析</h3>
@@ -291,17 +294,17 @@
         </div>
 
         <div id="aiLoading" class="hidden text-center py-2 text-sm font-black text-emerald-400 animate-pulse">
-          Gemini 3.8 Flash が写真を精密解析中...
+          Gemini 3.8 Flash がタ・脂・炭を精密解析中...
         </div>
       </div>
 
-      <!-- 参謀厳選：筋肥大給餌カタログ -->
+      <!-- 参謀厳選：筋肥大給餌カタログ（タ・脂・炭表記） -->
       <div class="bg-zinc-900 border-2 border-zinc-700 rounded-3xl p-4 space-y-3">
         <div class="flex justify-between items-center">
           <h3 class="text-xs font-black text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
             <span>🍽️</span> 参謀厳選：筋肥大給餌カタログ
           </h3>
-          <span class="text-[10px] font-bold text-zinc-400">画像・分量・PFC完全版</span>
+          <span class="text-[10px] font-bold text-zinc-400">画像・分量・タ脂炭完全版</span>
         </div>
 
         <div class="grid grid-cols-3 gap-1.5 p-1 bg-black rounded-xl border border-zinc-800">
@@ -574,6 +577,7 @@
       { day: 0, name: '日', label: '休', isWork: false }
     ];
 
+    // ★給餌カタログ（タ・脂・炭 完全表記）
     const MEAL_CATALOG = {
       lunch: [
         {
@@ -588,7 +592,7 @@
           cal: 680, p: 38, f: 18, c: 85,
           img: 'https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=600&auto=format&fit=crop&q=80',
           volume: 'サバ塩焼き1切れ(100g) / 白米220g / 納豆1パック / 味噌汁',
-          desc: '良質なオメガ3脂肪酸(EPA/DHA)が筋膜の炎症を抑えインスリン感受性を改善。納豆追加でP38g突破。'
+          desc: '良質なオメガ3脂肪酸(EPA/DHA)が筋膜の炎症を抑えインスリン感受性を改善。納豆追加でタ38g突破。'
         },
         {
           name: '超速コンビニ定食',
@@ -611,7 +615,7 @@
           cal: 420, p: 18, f: 3, c: 80,
           img: 'https://images.unsplash.com/photo-1505253758473-96b3015f21c9?w=600&auto=format&fit=crop&q=80',
           volume: '鮭/昆布おにぎり2個(米約200g) / ちくわ2本(またはチキンバー1本)',
-          desc: 'トレ2.5時間前に完食。脂質3g以下で完全に胃を通過させ、血糖値を満タンにしてジムに入る。'
+          desc: 'トレ2.5時間前に完食。脂3g以下で完全に胃を通過させ、血糖値を満タンにしてジムに入る。'
         },
         {
           name: '力うどん（餅1個＋温玉）',
@@ -1392,14 +1396,21 @@
         appData.daily.meals.forEach((meal) => {
           const item = document.createElement('div');
           item.className = 'flex justify-between items-center bg-zinc-900 border-2 border-zinc-700 p-3.5 rounded-2xl';
+          
+          const pBadge = `<span class="text-xs font-black text-emerald-400">タ: ${meal.protein || 0}g</span>`;
+          const fBadge = meal.fat !== undefined ? `<span class="text-xs font-bold text-orange-400 ml-1.5">脂: ${meal.fat}g</span>` : '';
+          const cBadge = meal.carbs !== undefined ? `<span class="text-xs font-bold text-yellow-400 ml-1.5">炭: ${meal.carbs}g</span>` : '';
+
           item.innerHTML = `
             <div>
               <div class="text-sm font-black text-white">${meal.name || '食事記録'}</div>
               <div class="text-xs font-bold text-zinc-400">${meal.time}</div>
             </div>
             <div class="text-right">
-              <span class="text-sm font-black text-emerald-400">P: ${meal.protein}g</span>
-              <span class="text-sm font-black text-yellow-400 ml-2">${meal.cal}kcal</span>
+              <div>
+                ${pBadge}${fBadge}${cBadge}
+              </div>
+              <span class="text-xs font-bold text-zinc-300">${meal.cal}kcal</span>
             </div>
           `;
           logsEl.appendChild(item);
@@ -1420,6 +1431,7 @@
       renderCatalogList();
     }
 
+    // ★給餌カタログの描画（タ・脂・炭 完全表記）
     function renderCatalogList() {
       const container = document.getElementById('catalogList');
       const items = MEAL_CATALOG[currentCatalogCategory] || [];
@@ -1437,11 +1449,11 @@
           </div>
 
           <div class="flex justify-between items-center text-xs font-black bg-zinc-900 p-2.5 rounded-xl border border-zinc-800">
-            <span class="text-yellow-400 text-sm">${item.cal} kcal</span>
+            <span class="text-yellow-400 text-sm font-black">${item.cal} kcal</span>
             <div class="flex gap-2">
-              <span class="text-emerald-400">P: ${item.p}g</span>
-              <span class="text-zinc-400">F: ${item.f}g</span>
-              <span class="text-zinc-300">C: ${item.c}g</span>
+              <span class="text-emerald-400 font-black">タ: ${item.p}g</span>
+              <span class="text-orange-400 font-bold">脂: ${item.f}g</span>
+              <span class="text-yellow-300 font-bold">炭: ${item.c}g</span>
             </div>
           </div>
 
@@ -1470,10 +1482,12 @@
         name: item.name,
         cal: item.cal,
         protein: item.p,
+        fat: item.f,
+        carbs: item.c,
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       });
       saveData();
-      alert(`「${item.name}（P: ${item.p}g / ${item.cal}kcal）」を食事ログに記録したぞ！`);
+      alert(`「${item.name}」を記録したぞ！\n【タ】${item.p}g  【脂】${item.f}g  【炭】${item.c}g (${item.cal}kcal)`);
     }
 
     function compressImage(file, maxWidth = 1024, quality = 0.75) {
@@ -1511,7 +1525,7 @@
       });
     }
 
-    // ★無料枠が確実に使える正規モデルのみを直撃する解析処理（地雷omni完全排除）
+    // ★写真アップロード ＆ 最新 Gemini 3.8 Flash 解析（タ・脂・炭 3大栄養素フル取得）
     async function handleMealPhoto(e) {
       const file = e.target.files[0];
       if (!file) return;
@@ -1526,6 +1540,8 @@
           const mockMeal = {
             name: '鶏胸肉と白米定食 (デモ解析)',
             protein: 42,
+            fat: 8,
+            carbs: 95,
             cal: 650,
             time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
           };
@@ -1538,9 +1554,8 @@
 
       try {
         const compressed = await compressImage(file, 1024, 0.75);
-        const prompt = "あなたは冷徹な筋トレ栄養参謀です。この食事写真から推定される料理名、総カロリー(kcal)、タンパク質量(g)を推計し、次のJSON形式のみで出力してください: {\"name\": \"料理名\", \"cal\": 650, \"protein\": 40}";
+        const prompt = "あなたは冷徹な筋トレ栄養参謀です。この食事写真から推定される料理名、総カロリー(kcal)、タンパク質量(g)、脂質量(g)、炭水化物量(g)を推計し、次のJSON形式のみで出力してください: {\"name\": \"料理名\", \"cal\": 650, \"protein\": 40, \"fat\": 12, \"carbs\": 85}";
 
-        // Google AI Studioで無料枠が確実に割り当てられている正規モデル軍
         const candidateModels = [
           'gemini-3.8-flash',
           'gemini-3.5-flash-lite',
@@ -1583,7 +1598,7 @@
 
             parsed = JSON.parse(jsonMatch[0]);
             usedModel = model;
-            break; // 成功したので即脱出！
+            break;
           } catch (err) {
             console.warn(`モデル ${model} でのエラー:`, err);
             lastError = err;
@@ -1600,10 +1615,12 @@
           name: parsed.name || '食事記録',
           cal: Number(parsed.cal) || 0,
           protein: Number(parsed.protein) || 0,
+          fat: Number(parsed.fat) || 0,
+          carbs: Number(parsed.carbs) || 0,
           time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         });
         saveData();
-        alert(`AI解析成功（使用モデル: ${usedModel}）！\n【料理名】${parsed.name}\n【タンパク質】${parsed.protein}g\n【カロリー】${parsed.cal}kcal\n食事ログに記録したぞ！`);
+        alert(`AI解析成功（使用モデル: ${usedModel}）！\n【料理名】${parsed.name}\n【タ（タンパク質）】${parsed.protein}g\n【脂（脂質）】${parsed.fat || 0}g\n【炭（炭水化物）】${parsed.carbs || 0}g\n【カロリー】${parsed.cal}kcal\n食事ログに記録したぞ！`);
       } catch (err) {
         console.error(err);
         alert(`【解析失敗】\n${err.message}`);
@@ -1613,7 +1630,6 @@
       }
     }
 
-    // 参謀アラート
     function renderCommanderAlerts() {
       const alertEl = document.getElementById('alertBanner');
       const remarksEl = document.getElementById('commanderRemarks');
@@ -1718,7 +1734,7 @@
       const key = document.getElementById('apiKeyInput').value.trim();
       localStorage.setItem('gemini_api_key', key);
       closeApiKeyModal();
-      alert("API Keyを保存したぞ。これで食事写真からPFCを自動解析できる。");
+      alert("API Keyを保存したぞ。これで食事写真からタ・脂・炭を自動解析できる。");
     }
 
     function exportData() {
