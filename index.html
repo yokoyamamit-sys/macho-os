@@ -13,306 +13,323 @@
     ::-webkit-scrollbar { display: none; }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-100 font-sans pb-24 min-h-screen">
+<body class="bg-black text-white font-sans pb-28 min-h-screen text-base antialiased selection:bg-emerald-500 selection:text-black">
 
-  <!-- ヘッダー -->
-  <header class="sticky top-0 z-30 bg-slate-900/90 backdrop-blur border-b border-slate-800 px-4 py-3 flex items-center justify-between">
+  <!-- ヘッダー（高コントラスト設計） -->
+  <header class="sticky top-0 z-30 bg-zinc-950/95 backdrop-blur border-b-2 border-zinc-700 px-4 py-3.5 flex items-center justify-between">
     <div>
-      <span class="text-[10px] font-bold tracking-widest text-emerald-400 uppercase">Strategic Training System</span>
-      <h1 class="text-lg font-black tracking-tight text-white flex items-center gap-2">
-        MachoOS <span id="currentPhaseBadge" class="text-xs px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800">上半身 A</span>
+      <span class="text-xs font-black tracking-widest text-emerald-400 uppercase">Strategic Training System</span>
+      <h1 class="text-xl font-black tracking-tight text-white flex items-center gap-2">
+        MachoOS <span id="currentPhaseBadge" class="text-sm font-black px-2.5 py-0.5 rounded-lg bg-emerald-500 text-black">上半身 A</span>
       </h1>
     </div>
-    <button onclick="openApiKeyModal()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-2.5 py-1.5 rounded-lg border border-slate-700">
+    <button onclick="openApiKeyModal()" class="text-sm font-bold bg-zinc-800 hover:bg-zinc-700 text-white px-3 py-2 rounded-xl border border-zinc-600 active:scale-95">
       API設定
     </button>
   </header>
 
-  <!-- 参謀の冷徹アラートエリア（動的表示） -->
-  <section id="alertBanner" class="p-3 mx-4 mt-3 rounded-xl border hidden transition-all"></section>
+  <!-- 参謀の冷徹アラートエリア（超高コントラスト） -->
+  <section id="alertBanner" class="p-4 mx-4 mt-4 rounded-2xl border-2 hidden transition-all"></section>
 
   <!-- メインコンテンツ領域（タブ切り替え） -->
-  <main class="max-w-md mx-auto px-4 mt-3">
+  <main class="max-w-md mx-auto px-4 mt-4">
 
-    <!-- TAB 1: 筋トレ（週4回ローテーション ＆ 作戦タイムライン） -->
-    <div id="tab-workout" class="tab-pane space-y-4">
+    <!-- ========================================== -->
+    <!-- TAB 1: 作戦（スケジュール ＆ 1日タイムライン） -->
+    <!-- ========================================== -->
+    <div id="tab-plan" class="tab-pane space-y-5">
       
       <!-- 週4回 推奨スケジュール表示（今日が光る動的カレンダー） -->
-      <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-3.5 space-y-2">
+      <div class="bg-zinc-900 border-2 border-zinc-700 rounded-3xl p-4 space-y-3">
         <div class="flex justify-between items-center">
-          <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">週4回 戦略サイクル</span>
-          <span id="todayScheduleBadge" class="text-[10px] font-black px-2 py-0.5 rounded">判定中...</span>
+          <span class="text-sm font-black text-zinc-300 uppercase tracking-wider">週4回 戦略サイクル</span>
+          <span id="todayScheduleBadge" class="text-xs font-black px-3 py-1 rounded-full">判定中...</span>
         </div>
-        <div class="grid grid-cols-7 gap-1.5 text-center text-[10px] font-bold" id="weeklyScheduleGrid">
+        <div class="grid grid-cols-7 gap-1.5 text-center text-xs font-black" id="weeklyScheduleGrid">
           <!-- JSで今日を自動ハイライト生成 -->
         </div>
-        <div id="todayScheduleText" class="text-[11px] font-bold text-slate-300 bg-slate-950 p-2.5 rounded-xl border border-slate-800/80 leading-snug">
+        <div id="todayScheduleText" class="text-sm font-bold text-white bg-black p-3.5 rounded-2xl border border-zinc-700 leading-relaxed">
           <!-- 今日の日本語指示 -->
         </div>
       </div>
 
-      <!-- トレーニング開始時刻 ＆ 逆算タイムライン -->
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
-        <div class="flex items-center justify-between">
-          <label class="text-xs font-black text-white flex items-center gap-1.5">
-            <span>⏱️</span> 今日のトレーニング開始予定
+      <!-- トレーニング開始時刻 ＆ 1日の完全逆算タイムライン -->
+      <div class="bg-zinc-900 border-2 border-zinc-700 rounded-3xl p-4 space-y-4">
+        <div>
+          <label class="text-sm font-black text-white flex items-center gap-2 mb-2">
+            <span class="text-lg">⏱️</span> 本日のトレーニング開始予定
           </label>
-          <input type="time" id="workoutStartTime" onchange="updateWorkoutTime(this.value)" oninput="updateWorkoutTime(this.value)" class="bg-slate-950 border border-slate-700 text-emerald-400 font-black text-xs px-2.5 py-1.5 rounded-lg focus:outline-none focus:border-emerald-500">
+          <div class="flex gap-2 items-center">
+            <input type="time" id="workoutStartTime" onchange="updateWorkoutTime(this.value)" oninput="updateWorkoutTime(this.value)" class="flex-1 bg-black border-2 border-emerald-500 text-emerald-400 font-black text-lg px-3 py-2 rounded-xl focus:outline-none">
+          </div>
         </div>
         
         <!-- クイック時刻選択チップ -->
-        <div class="flex gap-1.5 overflow-x-auto pb-1">
-          <button onclick="setWorkoutTimePreset('17:00')" class="px-2.5 py-1 bg-slate-950 hover:bg-slate-800 text-[10px] font-bold text-slate-300 rounded-lg border border-slate-800">17:00</button>
-          <button onclick="setWorkoutTimePreset('18:00')" class="px-2.5 py-1 bg-slate-950 hover:bg-slate-800 text-[10px] font-bold text-slate-300 rounded-lg border border-slate-800">18:00</button>
-          <button onclick="setWorkoutTimePreset('19:00')" class="px-2.5 py-1 bg-slate-950 hover:bg-slate-800 text-[10px] font-bold text-slate-300 rounded-lg border border-slate-800">19:00</button>
-          <button onclick="setWorkoutTimePreset('20:00')" class="px-2.5 py-1 bg-slate-950 hover:bg-slate-800 text-[10px] font-bold text-slate-300 rounded-lg border border-slate-800">20:00</button>
-          <button onclick="setWorkoutTimePreset('21:00')" class="px-2.5 py-1 bg-slate-950 hover:bg-slate-800 text-[10px] font-bold text-slate-300 rounded-lg border border-slate-800">21:00</button>
+        <div class="flex gap-2 overflow-x-auto pb-1">
+          <button onclick="setWorkoutTimePreset('17:00')" class="px-3.5 py-1.5 bg-black hover:bg-zinc-800 text-xs font-black text-zinc-200 rounded-xl border border-zinc-700 active:scale-95">17:00</button>
+          <button onclick="setWorkoutTimePreset('18:00')" class="px-3.5 py-1.5 bg-black hover:bg-zinc-800 text-xs font-black text-zinc-200 rounded-xl border border-zinc-700 active:scale-95">18:00</button>
+          <button onclick="setWorkoutTimePreset('19:00')" class="px-3.5 py-1.5 bg-black hover:bg-zinc-800 text-xs font-black text-zinc-200 rounded-xl border border-zinc-700 active:scale-95">19:00</button>
+          <button onclick="setWorkoutTimePreset('20:00')" class="px-3.5 py-1.5 bg-black hover:bg-zinc-800 text-xs font-black text-zinc-200 rounded-xl border border-zinc-700 active:scale-95">20:00</button>
+          <button onclick="setWorkoutTimePreset('21:00')" class="px-3.5 py-1.5 bg-black hover:bg-zinc-800 text-xs font-black text-zinc-200 rounded-xl border border-zinc-700 active:scale-95">21:00</button>
         </div>
 
-        <!-- 逆算タイムライン -->
-        <div id="timelineContainer" class="space-y-1.5 pt-2 border-t border-slate-800/80">
-          <!-- JSで自動展開 -->
+        <!-- 1日逆算タイムライン（修正版：50分後終了即補給） -->
+        <div class="pt-2 border-t-2 border-zinc-800">
+          <h3 class="text-xs font-black text-zinc-400 uppercase tracking-wider mb-2">本日の行動・給餌タイムライン</h3>
+          <div id="planTimelineContainer" class="space-y-2">
+            <!-- JSで自動展開 -->
+          </div>
         </div>
       </div>
 
-      <!-- ① トレーニング未完了時の表示エリア -->
+    </div>
+
+    <!-- ========================================== -->
+    <!-- TAB 2: 筋トレ（マシンチェックに超集中） -->
+    <!-- ========================================== -->
+    <div id="tab-workout" class="tab-pane hidden space-y-4">
+
+      <!-- 未完了時：チェックリスト -->
       <div id="activeWorkoutSection" class="space-y-4">
-        <div class="flex items-center justify-between pt-1">
+        <div class="flex items-center justify-between">
           <div>
-            <h2 id="workoutTitle" class="text-base font-black text-white">上半身 A：胸・背中厚み</h2>
-            <p class="text-xs text-slate-400">指示通りに重量と回数をこなしてチェックを入れろ</p>
+            <h2 id="workoutTitle" class="text-lg font-black text-white">上半身 A：胸・背中厚み</h2>
+            <p class="text-xs font-bold text-zinc-400">重量と回数をこなしてチェックを入れろ</p>
           </div>
-          <button onclick="advanceWorkoutPhase()" class="text-xs bg-slate-800 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700 active:scale-95">
+          <button onclick="advanceWorkoutPhase()" class="text-xs font-black bg-zinc-800 hover:bg-zinc-700 text-zinc-200 px-3 py-2 rounded-xl border border-zinc-600 active:scale-95">
             部位スキップ ❯
           </button>
         </div>
 
         <!-- マシンカード一覧（JS生成） -->
-        <div id="exerciseList" class="space-y-3"></div>
+        <div id="exerciseList" class="space-y-3.5"></div>
 
         <!-- トレーニング完了ボタン -->
-        <button onclick="completeCurrentWorkout()" class="w-full py-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-sm tracking-wide rounded-2xl shadow-lg shadow-emerald-950/60 active:scale-[0.98] transition flex items-center justify-center gap-2">
-          <span>🔥</span> 本日のトレーニングを完了・記録
+        <button onclick="completeCurrentWorkout()" class="w-full py-4 bg-emerald-500 hover:bg-emerald-400 text-black font-black text-base tracking-wide rounded-2xl shadow-xl shadow-emerald-500/20 active:scale-[0.98] transition flex items-center justify-center gap-2">
+          <span class="text-xl">🔥</span> 本日のトレーニングを完了・記録
         </button>
       </div>
 
-      <!-- ② トレーニング完了後の表示エリア（次回予告モード） -->
+      <!-- 完了後：次回予告モード -->
       <div id="completedWorkoutSection" class="hidden space-y-4">
-        <div class="bg-gradient-to-b from-emerald-950/80 to-slate-900 border-2 border-emerald-500/80 rounded-3xl p-5 text-center space-y-3 shadow-xl shadow-emerald-950/40">
-          <div class="w-12 h-12 bg-emerald-500 text-slate-950 rounded-full flex items-center justify-center text-2xl mx-auto font-black">
+        <div class="bg-zinc-900 border-2 border-emerald-500 rounded-3xl p-6 text-center space-y-3 shadow-2xl">
+          <div class="w-14 h-14 bg-emerald-500 text-black rounded-full flex items-center justify-center text-3xl mx-auto font-black">
             ✓
           </div>
           <div>
-            <span class="text-[10px] font-black uppercase tracking-widest text-emerald-400">TODAY'S WORKOUT COMPLETED</span>
-            <h3 class="text-lg font-black text-white mt-0.5">本日のトレーニング完了！</h3>
-            <p class="text-xs text-slate-300 mt-1">本日の筋破壊任務は終了だ。次は30分以内にプロテインを胃に流し込め！</p>
+            <span class="text-xs font-black uppercase tracking-widest text-emerald-400">TODAY'S MISSION COMPLETED</span>
+            <h3 class="text-xl font-black text-white mt-1">本日のトレーニング完了！</h3>
+            <p class="text-sm font-bold text-zinc-300 mt-1">筋線維の破壊任務完了だ。30分以内にプロテインを流し込め！</p>
           </div>
         </div>
 
         <!-- 次回予告カード -->
-        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-5 space-y-3">
+        <div class="bg-zinc-900 border-2 border-zinc-700 rounded-3xl p-5 space-y-3">
           <div class="flex items-center justify-between">
-            <span class="text-[11px] font-black uppercase tracking-wider text-emerald-400">NEXT MISSION（次回の作戦）</span>
-            <span id="nextMissionBadge" class="text-xs px-2.5 py-0.5 font-bold rounded-lg bg-emerald-500 text-slate-950">戦闘予定</span>
+            <span class="text-xs font-black uppercase tracking-wider text-emerald-400">NEXT MISSION（次回の作戦）</span>
+            <span id="nextMissionBadge" class="text-xs px-3 py-1 font-black rounded-lg bg-emerald-500 text-black">戦闘予定</span>
           </div>
-          <h4 id="nextMissionTitle" class="text-base font-black text-white">明日は【下半身 A】だ！</h4>
-          <p id="nextMissionDesc" class="text-xs text-slate-300 bg-slate-950 p-3 rounded-2xl border border-slate-800 leading-relaxed">
+          <h4 id="nextMissionTitle" class="text-lg font-black text-white">明日は【下半身 A】だ！</h4>
+          <p id="nextMissionDesc" class="text-sm font-bold text-zinc-200 bg-black p-4 rounded-2xl border border-zinc-700 leading-relaxed">
             前ももと大腿四頭筋を完全破壊する。レッグプレスで土台を叩き上げろ。
           </p>
         </div>
 
-        <button onclick="reopenTodayWorkout()" class="w-full py-2.5 text-xs text-slate-400 hover:text-slate-200 bg-slate-900/60 rounded-xl border border-slate-800/80 transition">
+        <button onclick="reopenTodayWorkout()" class="w-full py-3 text-xs font-bold text-zinc-400 hover:text-white bg-zinc-900 rounded-xl border border-zinc-800 transition">
           ↩ 完了を取り消して記録を修正する
         </button>
       </div>
 
     </div>
 
-    <!-- TAB 2: 食事（写真撮影 ＆ 作戦給餌スケジュール） -->
+    <!-- ========================================== -->
+    <!-- TAB 3: 食事（写真撮影 ＆ 栄養ログ） -->
+    <!-- ========================================== -->
     <div id="tab-nutrition" class="tab-pane hidden space-y-4">
       
-      <!-- 参謀の作戦給餌スケジュール（予定時刻連動） -->
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-2.5">
-        <div class="flex justify-between items-center">
-          <h3 class="text-xs font-black text-white flex items-center gap-1.5">
-            <span>🥩</span> 参謀の推奨給餌指令 (トレ予定連動)
-          </h3>
-          <span id="nutritionPlanTimeBadge" class="text-[10px] font-bold text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-800">19:00 開始基準</span>
-        </div>
-        <div id="nutritionTimelineList" class="space-y-2 text-xs">
-          <!-- JSで自動展開 -->
-        </div>
-      </div>
-
       <!-- 栄養摂取状況ゲージ -->
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
-        <h2 class="text-base font-bold text-white mb-2">本日の栄養摂取状況</h2>
-        <div class="space-y-1 mb-3">
-          <div class="flex justify-between text-xs font-semibold">
-            <span class="text-slate-400">タンパク質 (目標: <span id="targetProteinText">140</span>g)</span>
-            <span id="currentProteinText" class="text-emerald-400">0g</span>
+      <div class="bg-zinc-900 border-2 border-zinc-700 rounded-3xl p-5">
+        <h2 class="text-base font-black text-white mb-3">本日の栄養摂取状況</h2>
+        <div class="space-y-1.5 mb-4">
+          <div class="flex justify-between text-sm font-black">
+            <span class="text-zinc-300">タンパク質 (目標: <span id="targetProteinText">140</span>g)</span>
+            <span id="currentProteinText" class="text-emerald-400 text-base">0g</span>
           </div>
-          <div class="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden">
+          <div class="w-full bg-black h-3.5 rounded-full overflow-hidden border border-zinc-700">
             <div id="proteinBar" class="bg-emerald-500 h-full w-0 transition-all duration-500"></div>
           </div>
         </div>
-        <div class="space-y-1">
-          <div class="flex justify-between text-xs font-semibold">
-            <span class="text-slate-400">総カロリー (目安: <span id="targetCalText">2400</span>kcal)</span>
-            <span id="currentCalText" class="text-amber-400">0kcal</span>
+        <div class="space-y-1.5">
+          <div class="flex justify-between text-sm font-black">
+            <span class="text-zinc-300">総カロリー (目安: <span id="targetCalText">2400</span>kcal)</span>
+            <span id="currentCalText" class="text-yellow-400 text-base">0kcal</span>
           </div>
-          <div class="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden">
-            <div id="calBar" class="bg-amber-500 h-full w-0 transition-all duration-500"></div>
+          <div class="w-full bg-black h-3.5 rounded-full overflow-hidden border border-zinc-700">
+            <div id="calBar" class="bg-yellow-400 h-full w-0 transition-all duration-500"></div>
           </div>
         </div>
       </div>
 
-      <div class="border-2 border-dashed border-slate-800 rounded-2xl p-6 text-center bg-slate-900/50">
+      <!-- 写真アップロードボタン -->
+      <div class="border-2 border-dashed border-zinc-700 hover:border-emerald-500 rounded-3xl p-6 text-center bg-zinc-900/60">
         <input type="file" id="mealImageInput" accept="image/*" capture="environment" class="hidden" onchange="handleMealPhoto(event)">
-        <label for="mealImageInput" class="cursor-pointer flex flex-col items-center gap-2">
-          <div class="w-14 h-14 rounded-full bg-emerald-950 border border-emerald-700/50 flex items-center justify-center text-2xl">
+        <label for="mealImageInput" class="cursor-pointer flex flex-col items-center gap-2.5">
+          <div class="w-16 h-16 rounded-full bg-black border-2 border-emerald-500 flex items-center justify-center text-3xl shadow-lg">
             📸
           </div>
-          <span class="text-sm font-bold text-emerald-400">食事の写真を撮る / 選択</span>
-          <span class="text-[11px] text-slate-500">Gemini FlashがカロリーとPFCを自動解析</span>
+          <span class="text-base font-black text-emerald-400">食事の写真を撮る / 選択</span>
+          <span class="text-xs font-bold text-zinc-400">Gemini Flashがカロリーとタンパク質を自動判定</span>
         </label>
-        <div id="aiLoading" class="hidden mt-3 text-xs text-emerald-400 animate-pulse">
+        <div id="aiLoading" class="hidden mt-3 text-sm font-black text-emerald-400 animate-pulse">
           参謀AIが写真を精密解析中...
         </div>
       </div>
 
-      <div class="space-y-2">
-        <h3 class="text-xs font-bold text-slate-400 tracking-wider uppercase">本日の食事ログ</h3>
-        <div id="mealLogs" class="space-y-2">
-          <p class="text-xs text-slate-500 text-center py-4">まだ記録がねえぞ。食ったら即上げろ。</p>
+      <!-- 食事ログリスト -->
+      <div class="space-y-2.5">
+        <h3 class="text-xs font-black text-zinc-400 tracking-wider uppercase">本日の食事ログ</h3>
+        <div id="mealLogs" class="space-y-2.5">
+          <p class="text-sm font-bold text-zinc-500 text-center py-4">まだ記録がねえぞ。食ったら即上げろ。</p>
         </div>
       </div>
     </div>
 
-    <!-- TAB 3: デイリー（身体スペック・睡眠計画連動） -->
+    <!-- ========================================== -->
+    <!-- TAB 4: デイリー（身体スペック・睡眠） -->
+    <!-- ========================================== -->
     <div id="tab-daily" class="tab-pane hidden space-y-4">
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
-        <h2 class="text-base font-bold text-white">身体スペック</h2>
+      <div class="bg-zinc-900 border-2 border-zinc-700 rounded-3xl p-5 space-y-3">
+        <h2 class="text-base font-black text-white">身体スペック</h2>
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="text-xs text-slate-400 font-semibold block mb-1">体重 (kg)</label>
-            <input type="number" step="0.1" id="inputWeight" onchange="updateBodyStats()" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-base font-bold text-white focus:outline-none focus:border-emerald-500">
-            <span id="weightDiff" class="text-[11px] text-slate-400 mt-1 block">前日比: ±0.0kg</span>
+            <label class="text-xs text-zinc-300 font-black block mb-1">体重 (kg)</label>
+            <input type="number" step="0.1" id="inputWeight" onchange="updateBodyStats()" class="w-full bg-black border-2 border-zinc-700 focus:border-emerald-500 rounded-xl px-3 py-2.5 text-lg font-black text-white">
+            <span id="weightDiff" class="text-xs font-bold text-zinc-400 mt-1 block">前日比: ±0.0kg</span>
           </div>
           <div>
-            <label class="text-xs text-slate-400 font-semibold block mb-1">身長 (cm)</label>
-            <input type="number" step="0.5" id="inputHeight" onchange="updateBodyStats()" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-base font-bold text-white focus:outline-none focus:border-emerald-500">
-            <span class="text-[11px] text-slate-500 mt-1 block">初期値で一度設定</span>
+            <label class="text-xs text-zinc-300 font-black block mb-1">身長 (cm)</label>
+            <input type="number" step="0.5" id="inputHeight" onchange="updateBodyStats()" class="w-full bg-black border-2 border-zinc-700 focus:border-emerald-500 rounded-xl px-3 py-2.5 text-lg font-black text-white">
+            <span class="text-xs font-bold text-zinc-500 mt-1 block">初期値で一度設定</span>
           </div>
         </div>
       </div>
 
-      <!-- 睡眠戦略 ＆ 予定連動推奨時刻 -->
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
+      <div class="bg-zinc-900 border-2 border-zinc-700 rounded-3xl p-5 space-y-4">
         <div class="flex justify-between items-center">
-          <h2 class="text-base font-bold text-white">睡眠戦略</h2>
-          <span id="sleepStatusLabel" class="text-xs font-semibold px-2 py-0.5 rounded bg-slate-800 text-slate-300">未選択</span>
+          <h2 class="text-base font-black text-white">昨晩の睡眠時間</h2>
+          <span id="sleepStatusLabel" class="text-xs font-black px-2.5 py-1 rounded bg-black border border-zinc-700 text-emerald-400">未選択</span>
         </div>
 
-        <!-- トレ予定連動の推奨睡眠プラン -->
-        <div id="dailySleepAdvice" class="p-3 bg-indigo-950/40 border border-indigo-800/60 rounded-xl space-y-1">
-          <!-- JSで自動展開 -->
+        <div class="grid grid-cols-3 gap-2.5" id="sleepChips">
+          <button onclick="setSleep(5.0)" class="sleep-chip py-3 rounded-xl border-2 border-zinc-700 text-sm font-black bg-black text-zinc-200 hover:border-red-500 active:scale-95" data-hours="5.0">〜5.5h</button>
+          <button onclick="setSleep(6.0)" class="sleep-chip py-3 rounded-xl border-2 border-zinc-700 text-sm font-black bg-black text-zinc-200 hover:border-yellow-400 active:scale-95" data-hours="6.0">6.0h</button>
+          <button onclick="setSleep(6.5)" class="sleep-chip py-3 rounded-xl border-2 border-zinc-700 text-sm font-black bg-black text-zinc-200 hover:border-yellow-400 active:scale-95" data-hours="6.5">6.5h</button>
+          <button onclick="setSleep(7.0)" class="sleep-chip py-3 rounded-xl border-2 border-zinc-700 text-sm font-black bg-black text-zinc-200 hover:border-emerald-500 active:scale-95" data-hours="7.0">7.0h</button>
+          <button onclick="setSleep(7.5)" class="sleep-chip py-3 rounded-xl border-2 border-zinc-700 text-sm font-black bg-black text-zinc-200 hover:border-emerald-500 active:scale-95" data-hours="7.5">7.5h</button>
+          <button onclick="setSleep(8.0)" class="sleep-chip py-3 rounded-xl border-2 border-zinc-700 text-sm font-black bg-black text-zinc-200 hover:border-emerald-500 active:scale-95" data-hours="8.0">8.0h+</button>
         </div>
 
-        <div class="text-xs font-bold text-slate-400 mt-2">昨晩の睡眠時間を選択</div>
-        <div class="grid grid-cols-3 gap-2" id="sleepChips">
-          <button onclick="setSleep(5.0)" class="sleep-chip py-2.5 rounded-xl border border-slate-700 text-xs font-bold bg-slate-950 text-slate-300 hover:border-red-500" data-hours="5.0">〜5.5h</button>
-          <button onclick="setSleep(6.0)" class="sleep-chip py-2.5 rounded-xl border border-slate-700 text-xs font-bold bg-slate-950 text-slate-300 hover:border-amber-500" data-hours="6.0">6.0h</button>
-          <button onclick="setSleep(6.5)" class="sleep-chip py-2.5 rounded-xl border border-slate-700 text-xs font-bold bg-slate-950 text-slate-300 hover:border-amber-500" data-hours="6.5">6.5h</button>
-          <button onclick="setSleep(7.0)" class="sleep-chip py-2.5 rounded-xl border border-slate-700 text-xs font-bold bg-slate-950 text-slate-300 hover:border-emerald-500" data-hours="7.0">7.0h</button>
-          <button onclick="setSleep(7.5)" class="sleep-chip py-2.5 rounded-xl border border-slate-700 text-xs font-bold bg-slate-950 text-slate-300 hover:border-emerald-500" data-hours="7.5">7.5h</button>
-          <button onclick="setSleep(8.0)" class="sleep-chip py-2.5 rounded-xl border border-slate-700 text-xs font-bold bg-slate-950 text-slate-300 hover:border-emerald-500" data-hours="8.0">8.0h+</button>
-        </div>
-
-        <label class="flex items-center justify-between p-3 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer mt-3">
-          <span class="text-xs font-semibold text-slate-300">就寝前の静的ストレッチ完了</span>
-          <input type="checkbox" id="stretchCheck" onchange="toggleStretch()" class="w-4 h-4 accent-emerald-500 rounded">
+        <label class="flex items-center justify-between p-3.5 rounded-2xl bg-black border-2 border-zinc-800 cursor-pointer">
+          <span class="text-sm font-bold text-white">就寝前の静的ストレッチ完了</span>
+          <input type="checkbox" id="stretchCheck" onchange="toggleStretch()" class="w-5 h-5 accent-emerald-500 rounded">
         </label>
       </div>
     </div>
 
-    <!-- TAB 4: 参謀（分析・統括） -->
+    <!-- ========================================== -->
+    <!-- TAB 5: 参謀（分析・統括 ＆ 初期化） -->
+    <!-- ========================================== -->
     <div id="tab-analytics" class="tab-pane hidden space-y-4">
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
-        <h2 class="text-base font-bold text-white flex items-center gap-2">
+      <div class="bg-zinc-900 border-2 border-zinc-700 rounded-3xl p-5 space-y-3">
+        <h2 class="text-base font-black text-white flex items-center gap-2">
           <span>💀</span> 参謀の冷徹総括
         </h2>
-        <div id="commanderRemarks" class="text-xs leading-relaxed text-slate-300 space-y-2 bg-slate-950 p-3 rounded-xl border border-slate-800"></div>
+        <div id="commanderRemarks" class="text-sm font-bold leading-relaxed text-zinc-200 space-y-2 bg-black p-4 rounded-2xl border border-zinc-700"></div>
       </div>
 
-      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
-        <h3 class="text-xs font-bold text-slate-400">データ保全・復元</h3>
-        <div class="grid grid-cols-2 gap-2">
-          <button onclick="exportData()" class="py-2.5 bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-200 rounded-xl border border-slate-700 active:scale-95 flex items-center justify-center gap-1.5">
+      <!-- データ保全・復元・完全初期化 -->
+      <div class="bg-zinc-900 border-2 border-zinc-700 rounded-3xl p-5 space-y-4">
+        <h3 class="text-xs font-black text-zinc-400 tracking-wider uppercase">データ管理 ＆ 初期化</h3>
+        
+        <div class="grid grid-cols-2 gap-2.5">
+          <button onclick="exportData()" class="py-3 bg-zinc-800 hover:bg-zinc-700 text-sm font-black text-white rounded-xl border border-zinc-600 active:scale-95 flex items-center justify-center gap-1.5">
             <span>💾</span> JSON書き出し
           </button>
-          <label class="py-2.5 bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-200 rounded-xl border border-slate-700 active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer text-center">
+          <label class="py-3 bg-zinc-800 hover:bg-zinc-700 text-sm font-black text-white rounded-xl border border-zinc-600 active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer text-center">
             <span>📂</span> JSON復元
             <input type="file" id="importFileInput" accept=".json" class="hidden" onchange="importData(event)">
           </label>
         </div>
-        <button onclick="resetTodayData()" class="w-full py-2 bg-red-950/40 hover:bg-red-950/80 text-red-300 text-[11px] font-semibold rounded-lg border border-red-900/60 transition">
-          本日の記録のみ初期化
+
+        <button onclick="resetTodayData()" class="w-full py-2.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-bold rounded-xl border border-zinc-700 transition">
+          本日の記録のみリセット
         </button>
+
+        <!-- 完全初期化ボタン -->
+        <div class="pt-3 border-t-2 border-zinc-800">
+          <button onclick="factoryReset()" class="w-full py-3.5 bg-red-600 hover:bg-red-500 text-white text-sm font-black rounded-xl shadow-lg shadow-red-900/40 active:scale-95 transition flex items-center justify-center gap-2">
+            <span>⚠️</span> 全データ完全リセット（初期状態に戻す）
+          </button>
+          <p class="text-[11px] font-bold text-zinc-500 text-center mt-1.5">動作確認終了後、本番スタート時に使用しろ</p>
+        </div>
       </div>
     </div>
 
   </main>
 
-  <!-- 下部固定タブナビゲーション -->
-  <nav class="fixed bottom-0 left-0 right-0 z-40 bg-slate-900/95 backdrop-blur border-t border-slate-800 max-w-md mx-auto">
-    <div class="grid grid-cols-4 py-2">
-      <button onclick="switchTab('workout')" id="nav-workout" class="flex flex-col items-center gap-1 text-emerald-400">
-        <span class="text-lg">🏋️</span>
-        <span class="text-[10px] font-bold">筋トレ</span>
+  <!-- 下部固定タブナビゲーション（5タブ体制） -->
+  <nav class="fixed bottom-0 left-0 right-0 z-40 bg-zinc-950/98 backdrop-blur border-t-2 border-zinc-700 max-w-md mx-auto">
+    <div class="grid grid-cols-5 py-2.5">
+      <button onclick="switchTab('plan')" id="nav-plan" class="flex flex-col items-center gap-1 text-emerald-400">
+        <span class="text-xl">🗺️</span>
+        <span class="text-xs font-black">作戦</span>
       </button>
-      <button onclick="switchTab('nutrition')" id="nav-nutrition" class="flex flex-col items-center gap-1 text-slate-400">
-        <span class="text-lg">🥩</span>
-        <span class="text-[10px] font-bold">食事</span>
+      <button onclick="switchTab('workout')" id="nav-workout" class="flex flex-col items-center gap-1 text-zinc-400">
+        <span class="text-xl">🏋️</span>
+        <span class="text-xs font-black">筋トレ</span>
       </button>
-      <button onclick="switchTab('daily')" id="nav-daily" class="flex flex-col items-center gap-1 text-slate-400">
-        <span class="text-lg">📊</span>
-        <span class="text-[10px] font-bold">デイリー</span>
+      <button onclick="switchTab('nutrition')" id="nav-nutrition" class="flex flex-col items-center gap-1 text-zinc-400">
+        <span class="text-xl">🥩</span>
+        <span class="text-xs font-black">食事</span>
       </button>
-      <button onclick="switchTab('analytics')" id="nav-analytics" class="flex flex-col items-center gap-1 text-slate-400">
-        <span class="text-lg">♟️</span>
-        <span class="text-[10px] font-bold">参謀</span>
+      <button onclick="switchTab('daily')" id="nav-daily" class="flex flex-col items-center gap-1 text-zinc-400">
+        <span class="text-xl">📊</span>
+        <span class="text-xs font-black">デイリー</span>
+      </button>
+      <button onclick="switchTab('analytics')" id="nav-analytics" class="flex flex-col items-center gap-1 text-zinc-400">
+        <span class="text-xl">♟️</span>
+        <span class="text-xs font-black">参謀</span>
       </button>
     </div>
   </nav>
 
   <!-- 祝福モーダル (祝賀・労い演出) -->
-  <div id="congratsModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 hidden">
-    <div class="bg-gradient-to-b from-slate-900 to-slate-950 border-2 border-emerald-500 rounded-3xl p-6 max-w-xs w-full text-center space-y-4 shadow-2xl shadow-emerald-500/30">
+  <div id="congratsModal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 hidden">
+    <div class="bg-zinc-900 border-2 border-emerald-500 rounded-3xl p-6 max-w-xs w-full text-center space-y-4 shadow-2xl">
       <div class="text-5xl animate-bounce">🏆</div>
       <div>
-        <span class="text-[11px] font-bold uppercase tracking-widest text-emerald-400">Mission Accomplished</span>
+        <span class="text-xs font-black uppercase tracking-widest text-emerald-400">Mission Accomplished</span>
         <h3 class="text-xl font-black text-white mt-1">本日のトレーニング終了！</h3>
-        <p class="text-xs text-emerald-300 font-bold mt-1">よくやりきったな、りょう！</p>
+        <p class="text-sm font-black text-emerald-400 mt-1">よくやりきったな、りょう！</p>
       </div>
-      <div class="text-xs text-slate-300 bg-slate-900/80 p-3 rounded-xl border border-slate-800 leading-relaxed text-left">
+      <div class="text-xs font-bold text-zinc-200 bg-black p-3.5 rounded-2xl border border-zinc-700 leading-relaxed text-left">
         今日の筋線維破壊ミッションは完璧に完遂した。だが勝負はここからだ。30分以内にプロテインを胃に流し込み、今夜は7時間以上寝て超回復させろ！
       </div>
-      <button onclick="closeCongratsModal()" class="w-full py-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-sm rounded-xl active:scale-95 transition">
+      <button onclick="closeCongratsModal()" class="w-full py-3.5 bg-emerald-500 hover:bg-emerald-400 text-black font-black text-sm rounded-xl active:scale-95 transition">
         了解！次回作戦を確認する ❯
       </button>
     </div>
   </div>
 
   <!-- Gemini API Key モーダル -->
-  <div id="apiModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 max-w-xs w-full space-y-3">
-      <h3 class="text-sm font-bold text-white">Gemini API Key 設定</h3>
-      <p class="text-[11px] text-slate-400">食事写真のリアルタイム解析に使用します。キーはブラウザにのみ安全に保存されます。</p>
-      <input type="password" id="apiKeyInput" placeholder="AIzaSy..." class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-white">
+  <div id="apiModal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-zinc-900 border-2 border-zinc-700 rounded-3xl p-5 max-w-xs w-full space-y-3">
+      <h3 class="text-base font-black text-white">Gemini API Key 設定</h3>
+      <p class="text-xs font-bold text-zinc-300">食事写真のリアルタイム解析に使用します。キーはブラウザにのみ安全に保存されます。</p>
+      <input type="password" id="apiKeyInput" placeholder="AIzaSy..." class="w-full bg-black border-2 border-zinc-600 rounded-xl px-3 py-2.5 text-sm text-white focus:border-emerald-500">
       <div class="flex gap-2 justify-end pt-2">
-        <button onclick="closeApiKeyModal()" class="px-3 py-1.5 text-xs text-slate-400">キャンセル</button>
-        <button onclick="saveApiKey()" class="px-3 py-1.5 bg-emerald-500 text-slate-950 font-bold text-xs rounded-lg">保存</button>
+        <button onclick="closeApiKeyModal()" class="px-3 py-2 text-xs font-bold text-zinc-400">キャンセル</button>
+        <button onclick="saveApiKey()" class="px-4 py-2 bg-emerald-500 text-black font-black text-xs rounded-xl">保存</button>
       </div>
     </div>
   </div>
@@ -372,7 +389,6 @@
       }
     ];
 
-    // 週4回推奨プラン定義: 月(1):上A, 火(2):下A, 水(3):休, 木(4):上B, 金(5):下B, 土(6):休, 日(0):休
     const WEEK_PLAN = [
       { day: 1, name: '月', label: '上A', isWork: true, rIdx: 0 },
       { day: 2, name: '火', label: '下A', isWork: true, rIdx: 1 },
@@ -432,14 +448,14 @@
     // --- 3. UI レンダリング ---
     function renderAll() {
       renderScheduleGrid();
-      renderTimelines();
+      renderPlanTimeline();
       renderWorkoutTab();
       renderNutritionTab();
       renderDailyTab();
       renderCommanderAlerts();
     }
 
-    // 週4回スケジュールの描画（今日が光る）
+    // 作戦タブ：週間カレンダー
     function renderScheduleGrid() {
       const gridEl = document.getElementById('weeklyScheduleGrid');
       const badgeEl = document.getElementById('todayScheduleBadge');
@@ -450,11 +466,11 @@
       const todayPlan = WEEK_PLAN.find(p => p.day === currentDay);
 
       if (todayPlan.isWork) {
-        badgeEl.className = 'text-[10px] font-black px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800';
+        badgeEl.className = 'text-xs font-black px-3 py-1 rounded-full bg-emerald-500 text-black';
         badgeEl.innerText = '本日: 戦闘推奨日（筋肥大）';
         textEl.innerHTML = `🔥 本日は【${todayPlan.name}曜：${todayPlan.label}】の戦闘推奨日だ。筋線維を追い込み超回復へ導け。`;
       } else {
-        badgeEl.className = 'text-[10px] font-black px-2 py-0.5 rounded bg-blue-950 text-blue-300 border border-blue-800';
+        badgeEl.className = 'text-xs font-black px-3 py-1 rounded-full bg-cyan-400 text-black';
         badgeEl.innerText = '本日: 超回復推奨日（OFF）';
         textEl.innerHTML = `🛡️ 本日は【${todayPlan.name}曜：休養】の超回復日だ。筋肉はベッドの上で育つ。タンパク質と睡眠に徹しろ。`;
       }
@@ -463,24 +479,23 @@
         const isToday = p.day === currentDay;
         const box = document.createElement('div');
         if (isToday) {
-          box.className = 'p-1.5 rounded-xl bg-emerald-500 text-slate-950 border-2 border-white ring-2 ring-emerald-400 font-black shadow-lg scale-105';
-          box.innerHTML = `${p.name}<br><span class="text-[9px]">${p.label}</span><div class="text-[7px] bg-slate-950 text-emerald-400 rounded mt-0.5">TODAY</div>`;
+          box.className = 'p-2 rounded-2xl bg-emerald-400 text-black border-2 border-white font-black shadow-lg scale-105';
+          box.innerHTML = `<span class="text-sm">${p.name}</span><br><span class="text-xs font-black">${p.label}</span><div class="text-[8px] bg-black text-emerald-400 rounded px-1 mt-0.5 font-bold">TODAY</div>`;
         } else if (p.isWork) {
-          box.className = 'p-1.5 rounded-lg bg-emerald-950/70 border border-emerald-800/80 text-emerald-300';
-          box.innerHTML = `${p.name}<br><span class="text-[9px] font-normal text-slate-300">${p.label}</span>`;
+          box.className = 'p-2 rounded-xl bg-zinc-800 border-2 border-zinc-700 text-emerald-400';
+          box.innerHTML = `<span class="text-sm font-bold text-white">${p.name}</span><br><span class="text-xs font-black">${p.label}</span>`;
         } else {
-          box.className = 'p-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-500';
-          box.innerHTML = `${p.name}<br><span class="text-[9px] font-normal text-slate-500">${p.label}</span>`;
+          box.className = 'p-2 rounded-xl bg-black border-2 border-zinc-800 text-zinc-500';
+          box.innerHTML = `<span class="text-sm font-bold text-zinc-400">${p.name}</span><br><span class="text-xs font-bold text-zinc-500">${p.label}</span>`;
         }
         gridEl.appendChild(box);
       });
     }
 
-    // タイムライン計算（筋トレ・食事・睡眠の3タブへ同時展開）
-    function renderTimelines() {
+    // 作戦タブ：1日タイムライン（修正版：50分後終了即補給）
+    function renderPlanTimeline() {
       const timeStr = appData.workoutStartTime || '19:00';
       document.getElementById('workoutStartTime').value = timeStr;
-      document.getElementById('nutritionPlanTimeBadge').innerText = `${timeStr} 開始基準`;
 
       const parts = timeStr.split(':');
       const h = parseInt(parts[0], 10) || 19;
@@ -493,83 +508,68 @@
         return `${hh}:${mm}`;
       };
 
-      const preMeal = toTime(-150);   // 2.5h前
-      const postShake = toTime(40);   // トレ直後
-      const postDinner = toTime(90);  // 1.5h後
+      const preMeal = toTime(-150);   // 2.5h前 (トレ前食)
+      const postShake = toTime(50);   // 50分間の戦闘終了直後！(即時補給)
+      const postDinner = toTime(110); // トレ終了から1時間後 (本格夕食)
       const sleep = toTime(240);      // 4h後 (深部体温降下)
       const wake = toTime(240 + 450); // 7.5h後
 
-      // 1. 筋トレタブのタイムライン
-      document.getElementById('timelineContainer').innerHTML = `
-        <div class="grid grid-cols-1 gap-1 text-[11px]">
-          <div class="flex items-center justify-between p-2 rounded-xl bg-slate-950 border border-slate-800/80">
-            <span class="font-bold text-amber-400">🍚 ${preMeal} トレ前食</span>
-            <span class="text-slate-300 text-[10px]">米/バナナ＋軽P (消化完了)</span>
+      document.getElementById('planTimelineContainer').innerHTML = `
+        <div class="p-3 rounded-2xl bg-black border border-zinc-800 flex justify-between items-center">
+          <div>
+            <span class="text-xs font-black text-zinc-400">☀️ 07:00〜 朝</span>
+            <div class="text-sm font-black text-white">朝食抜き（水分・コーヒーのみ）</div>
           </div>
-          <div class="flex items-center justify-between p-2 rounded-xl bg-emerald-950/40 border border-emerald-800/60">
-            <span class="font-black text-emerald-400">🏋️ ${timeStr} 戦闘開始</span>
-            <span class="text-emerald-300 text-[10px]">50分集中・水分補給</span>
-          </div>
-          <div class="flex items-center justify-between p-2 rounded-xl bg-slate-950 border border-slate-800/80">
-            <span class="font-bold text-emerald-400">🥤 ${postShake} 直後補給</span>
-            <span class="text-slate-300 text-[10px]">ホエイプロテイン30g＋糖質</span>
-          </div>
-          <div class="flex items-center justify-between p-2 rounded-xl bg-slate-950 border border-slate-800/80">
-            <span class="font-bold text-slate-300">🍽️ ${postDinner} 夕食完了</span>
-            <span class="text-slate-400 text-[10px]">高タンパク定食 (白米＋肉/魚)</span>
-          </div>
-          <div class="flex items-center justify-between p-2 rounded-xl bg-indigo-950/40 border border-indigo-800/60">
-            <span class="font-black text-indigo-300">🌙 ${sleep} 推奨就寝</span>
-            <span class="text-indigo-200 text-[10px]">7.5h睡眠 ➔ ${wake} 起床目標</span>
-          </div>
-        </div>
-      `;
-
-      // 2. 食事タブの給餌指令リスト
-      document.getElementById('nutritionTimelineList').innerHTML = `
-        <div class="p-2.5 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
-          <div class="flex justify-between items-center text-amber-400 font-bold">
-            <span>① トレ前食：${preMeal} までに完了</span>
-            <span class="text-[10px] bg-amber-950 text-amber-300 border border-amber-800 px-1.5 py-0.5 rounded">胃を空にして挑め</span>
-          </div>
-          <p class="text-[11px] text-slate-300 leading-relaxed">
-            <b>推奨：</b>おにぎり1〜2個、バナナ1本、和菓子等。<br>
-            <span class="text-slate-500">※脂質（揚げ物・洋菓子）は消化が遅れ血流を胃に奪われるため厳禁。</span>
-          </p>
+          <span class="text-xs font-bold text-zinc-500">内臓休養・集中</span>
         </div>
 
-        <div class="p-2.5 rounded-xl bg-slate-950 border border-emerald-900/60 space-y-1">
-          <div class="flex justify-between items-center text-emerald-400 font-bold">
-            <span>② トレ直後：${postShake} に流し込め</span>
-            <span class="text-[10px] bg-emerald-950 text-emerald-300 border border-emerald-800 px-1.5 py-0.5 rounded">同化ゴールデンタイム</span>
+        <div class="p-3 rounded-2xl bg-black border border-zinc-700 flex justify-between items-center">
+          <div>
+            <span class="text-xs font-black text-yellow-400">🍱 12:00〜13:00 昼食</span>
+            <div class="text-sm font-black text-white">高タンパク定食（肉/魚＋白米）</div>
           </div>
-          <p class="text-[11px] text-slate-300 leading-relaxed">
-            <b>推奨：</b>ホエイプロテイン30g ＋ 即効性糖質（100%ジュースやスポーツドリンク200ml）。<br>
-            <span class="text-slate-500">※インスリンを分泌させ、枯渇した筋グリコーゲンへアミノ酸を一気に送り込む。</span>
-          </p>
+          <span class="text-xs font-bold text-yellow-300">筋分解防止</span>
         </div>
 
-        <div class="p-2.5 rounded-xl bg-slate-950 border border-slate-800 space-y-1">
-          <div class="flex justify-between items-center text-slate-200 font-bold">
-            <span>③ トレ後夕食：${postDinner} までに摂取</span>
-            <span class="text-[10px] bg-slate-800 text-slate-300 px-1.5 py-0.5 rounded">本格筋修復</span>
+        <div class="p-3 rounded-2xl bg-black border border-amber-600/60 flex justify-between items-center">
+          <div>
+            <span class="text-xs font-black text-amber-400">🍚 ${preMeal} トレ前食 (2.5h前)</span>
+            <div class="text-sm font-black text-white">おにぎり・バナナ・和菓子</div>
           </div>
-          <p class="text-[11px] text-slate-300 leading-relaxed">
-            <b>推奨：</b>白米200g ＋ 鶏胸肉or赤身肉or魚 ＋ 卵や豆腐 ＋ 味噌汁。<br>
-            <span class="text-slate-500">※タンパク質35〜40gを確保し、就寝中のカタボリックを完全封鎖しろ。</span>
-          </p>
+          <span class="text-xs font-bold text-amber-300">消化完了</span>
         </div>
-      `;
 
-      // 3. デイリータブ（睡眠）の推奨時刻表示
-      document.getElementById('dailySleepAdvice').innerHTML = `
-        <div class="flex items-center justify-between text-indigo-300 text-xs font-black">
-          <span>🌙 本日の推奨就寝：${sleep}</span>
-          <span class="text-[10px] bg-indigo-900 text-indigo-200 px-2 py-0.5 rounded">深部体温リズム最適化</span>
+        <div class="p-3 rounded-2xl bg-zinc-900 border-2 border-emerald-500 flex justify-between items-center shadow-lg">
+          <div>
+            <span class="text-xs font-black text-emerald-400">🏋️ ${timeStr} 戦闘開始</span>
+            <div class="text-base font-black text-white">50分集中・水分補給</div>
+          </div>
+          <span class="text-xs font-black px-2 py-0.5 rounded bg-emerald-500 text-black">MAIN</span>
         </div>
-        <p class="text-[11px] text-slate-300 mt-1 leading-relaxed">
-          ${timeStr} のトレーニングで上昇した深部体温は、約4時間後の <b>${sleep}</b> に急降下する。この波に乗って入眠すれば、深いノンレム睡眠と成長ホルモンの爆発分泌が約束される（目標起床：<b>${wake}</b>）。
-        </p>
+
+        <div class="p-3 rounded-2xl bg-black border border-emerald-600/60 flex justify-between items-center">
+          <div>
+            <span class="text-xs font-black text-emerald-400">🥤 ${postShake} 直後補給 (トレ終了即)</span>
+            <div class="text-sm font-black text-white">ホエイプロテイン30g＋糖質</div>
+          </div>
+          <span class="text-xs font-bold text-emerald-300">即時同化</span>
+        </div>
+
+        <div class="p-3 rounded-2xl bg-black border border-zinc-700 flex justify-between items-center">
+          <div>
+            <span class="text-xs font-black text-zinc-300">🍽️ ${postDinner} 夕食完了 (終了1h後)</span>
+            <div class="text-sm font-black text-white">白米＋高タンパクおかず</div>
+          </div>
+          <span class="text-xs font-bold text-zinc-300">本格修復</span>
+        </div>
+
+        <div class="p-3 rounded-2xl bg-black border-2 border-cyan-500 flex justify-between items-center">
+          <div>
+            <span class="text-xs font-black text-cyan-300">🌙 ${sleep} 推奨就寝</span>
+            <div class="text-sm font-black text-white">7.5h睡眠 ➔ ${wake} 起床目標</div>
+          </div>
+          <span class="text-xs font-black text-cyan-300">体温急降下</span>
+        </div>
       `;
     }
 
@@ -585,7 +585,7 @@
       saveData();
     }
 
-    // 筋トレタブの描画
+    // 筋トレタブ：マシンチェック
     function renderWorkoutTab() {
       const routine = ROUTINES[appData.currentPhaseIdx];
       document.getElementById('currentPhaseBadge').innerText = routine.title;
@@ -594,7 +594,6 @@
       const activeSec = document.getElementById('activeWorkoutSection');
       const compSec = document.getElementById('completedWorkoutSection');
 
-      // 本日完了している場合：チェックリストを隠し、次回予告ビューを全開にする
       if (appData.daily.isCompletedToday) {
         activeSec.classList.add('hidden');
         compSec.classList.remove('hidden');
@@ -609,12 +608,12 @@
         const desc = document.getElementById('nextMissionDesc');
 
         if (!tomPlan.isWork) {
-          badge.className = 'text-xs px-2.5 py-0.5 font-bold rounded-lg bg-blue-500 text-slate-950';
+          badge.className = 'text-xs px-3 py-1 font-black rounded-lg bg-cyan-400 text-black';
           badge.innerText = '超回復日';
           title.innerText = `明日は【完全休養（OFF）】だ！`;
           desc.innerHTML = `筋肉はジムではなくベッドの上で育つ。明日はトレーニングを完全に休み、タンパク質補給と関節の休養に徹しろ。`;
         } else {
-          badge.className = 'text-xs px-2.5 py-0.5 font-bold rounded-lg bg-emerald-500 text-slate-950';
+          badge.className = 'text-xs px-3 py-1 font-black rounded-lg bg-emerald-500 text-black';
           badge.innerText = '戦闘予定';
           title.innerText = `明日は【${routine.title}】だ！`;
           desc.innerHTML = `${routine.nextDesc}`;
@@ -622,7 +621,6 @@
         return;
       }
 
-      // 未完了の場合：チェックリストを表示
       activeSec.classList.remove('hidden');
       compSec.classList.add('hidden');
 
@@ -635,36 +633,36 @@
         const isDone = !!appData.daily.completedExercises[ex.name];
 
         const badgeHTML = isSleepDeprived 
-          ? `<span class="text-[9px] bg-red-950 text-red-400 border border-red-800 px-1.5 py-0.5 rounded">維持モード(MAX禁止)</span>`
+          ? `<span class="text-xs bg-red-600 text-white font-black px-2 py-0.5 rounded">維持モード(MAX禁止)</span>`
           : '';
 
         const warm1 = Math.round(savedEx.weight * 0.4);
         const warm2 = Math.round(savedEx.weight * 0.7);
 
         const card = document.createElement('div');
-        card.className = `p-3 rounded-2xl border transition-all ${isDone ? 'bg-emerald-950/20 border-emerald-800/80' : 'bg-slate-900 border-slate-800'}`;
+        card.className = `p-4 rounded-3xl border-2 transition-all ${isDone ? 'bg-zinc-950 border-emerald-500/80' : 'bg-zinc-900 border-zinc-700'}`;
         card.innerHTML = `
-          <div class="flex items-center justify-between mb-2">
-            <div class="flex items-center gap-2">
-              <input type="checkbox" ${isDone ? 'checked' : ''} onchange="toggleExercise('${ex.name}')" class="w-5 h-5 accent-emerald-500 rounded">
-              <span class="text-sm font-bold text-white ${isDone ? 'line-through text-slate-400' : ''}">${ex.name}</span>
+          <div class="flex items-center justify-between mb-2.5">
+            <div class="flex items-center gap-3">
+              <input type="checkbox" ${isDone ? 'checked' : ''} onchange="toggleExercise('${ex.name}')" class="w-6 h-6 accent-emerald-500 rounded-lg cursor-pointer">
+              <span class="text-base font-black ${isDone ? 'line-through text-zinc-500' : 'text-white'}">${ex.name}</span>
             </div>
             ${badgeHTML}
           </div>
 
-          <div class="text-[10px] text-slate-500 mb-2 pl-7">
-            目安W-up: ${warm1}kg×8回 ➔ ${warm2}kg×3回 ➔ 本番へ
+          <div class="text-xs font-bold text-zinc-400 mb-3 pl-9">
+            目安W-up: ${warm1}kg×8回 ➔ ${warm2}kg×3回 ➔ 本番
           </div>
 
-          <div class="flex items-center justify-between bg-slate-950 p-2 rounded-xl border border-slate-800/60 pl-3">
-            <div class="text-xs font-semibold text-slate-300">
-              <span class="text-base font-black text-emerald-400">${savedEx.weight}</span> kg × 
-              <span class="text-base font-black text-white">${savedEx.reps}</span> 回 × 
-              <span class="text-base font-black text-white">${savedEx.sets}</span> set
+          <div class="flex items-center justify-between bg-black p-3 rounded-2xl border border-zinc-700 pl-4">
+            <div class="text-sm font-bold text-zinc-300">
+              <span class="text-xl font-black text-emerald-400">${savedEx.weight}</span> kg × 
+              <span class="text-xl font-black text-white">${savedEx.reps}</span> 回 × 
+              <span class="text-xl font-black text-white">${savedEx.sets}</span> set
             </div>
-            <div class="flex gap-1">
-              <button onclick="adjustWeight('${ex.name}', -${ex.step})" class="w-7 h-7 rounded bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-200 active:scale-90">-</button>
-              <button onclick="adjustWeight('${ex.name}', ${ex.step})" class="w-7 h-7 rounded bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-200 active:scale-90">+</button>
+            <div class="flex gap-1.5">
+              <button onclick="adjustWeight('${ex.name}', -${ex.step})" class="w-9 h-9 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-base font-black text-white border border-zinc-600 active:scale-90">-</button>
+              <button onclick="adjustWeight('${ex.name}', ${ex.step})" class="w-9 h-9 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-base font-black text-white border border-zinc-600 active:scale-90">+</button>
             </div>
           </div>
         `;
@@ -696,7 +694,6 @@
       saveData();
     }
 
-    // トレーニング完了処理
     function completeCurrentWorkout() {
       if (typeof confetti === 'function') {
         confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
@@ -739,11 +736,11 @@
       chips.forEach(btn => {
         const h = parseFloat(btn.dataset.hours);
         if (h === appData.daily.sleepHours) {
-          btn.classList.add('bg-emerald-500', 'text-slate-950', 'border-emerald-400');
-          btn.classList.remove('bg-slate-950', 'text-slate-300');
+          btn.classList.add('bg-emerald-500', 'text-black', 'border-emerald-400');
+          btn.classList.remove('bg-black', 'text-zinc-200');
         } else {
-          btn.classList.remove('bg-emerald-500', 'text-slate-950', 'border-emerald-400');
-          btn.classList.add('bg-slate-950', 'text-slate-300');
+          btn.classList.remove('bg-emerald-500', 'text-black', 'border-emerald-400');
+          btn.classList.add('bg-black', 'text-zinc-200');
         }
       });
       document.getElementById('sleepStatusLabel').innerText = `${appData.daily.sleepHours}h 選択中`;
@@ -793,20 +790,20 @@
 
       const logsEl = document.getElementById('mealLogs');
       if (appData.daily.meals.length === 0) {
-        logsEl.innerHTML = `<p class="text-xs text-slate-500 text-center py-4">まだ記録がねえぞ。食ったら即上げろ。</p>`;
+        logsEl.innerHTML = `<p class="text-sm font-bold text-zinc-500 text-center py-4">まだ記録がねえぞ。食ったら即上げろ。</p>`;
       } else {
         logsEl.innerHTML = '';
         appData.daily.meals.forEach((meal) => {
           const item = document.createElement('div');
-          item.className = 'flex justify-between items-center bg-slate-900 border border-slate-800 p-3 rounded-xl';
+          item.className = 'flex justify-between items-center bg-zinc-900 border-2 border-zinc-700 p-3.5 rounded-2xl';
           item.innerHTML = `
             <div>
-              <div class="text-xs font-bold text-white">${meal.name || '食事記録'}</div>
-              <div class="text-[10px] text-slate-400">${meal.time}</div>
+              <div class="text-sm font-black text-white">${meal.name || '食事記録'}</div>
+              <div class="text-xs font-bold text-zinc-400">${meal.time}</div>
             </div>
             <div class="text-right">
-              <span class="text-xs font-bold text-emerald-400">P: ${meal.protein}g</span>
-              <span class="text-xs font-bold text-amber-400 ml-2">${meal.cal}kcal</span>
+              <span class="text-sm font-black text-emerald-400">P: ${meal.protein}g</span>
+              <span class="text-sm font-black text-yellow-400 ml-2">${meal.cal}kcal</span>
             </div>
           `;
           logsEl.appendChild(item);
@@ -882,7 +879,7 @@
       reader.onerror = error => rej(error);
     });
 
-    // --- 4. 参謀の冷徹アラート＆日曜定期保全 ---
+    // 参謀アラート（超高コントラスト）
     function renderCommanderAlerts() {
       const alertEl = document.getElementById('alertBanner');
       const remarksEl = document.getElementById('commanderRemarks');
@@ -898,7 +895,7 @@
           level: 'backup',
           title: '⚠️ 日曜定期保全：データのバックアップ',
           text: '週に一度のデータ保全日だ。下のボタンを押して今週の成果をJSON保存しろ。',
-          action: `<button onclick="quickBackup()" class="mt-2 w-full py-1.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs rounded-lg active:scale-95 transition">ワンタップで今すぐ保存</button>`
+          action: `<button onclick="quickBackup()" class="mt-2.5 w-full py-2 bg-cyan-400 text-black font-black text-xs rounded-xl active:scale-95 transition">ワンタップで今すぐ保存</button>`
         });
       }
 
@@ -931,14 +928,14 @@
 
       if (alerts.length > 0) {
         const topAlert = alerts[0];
-        let colorClass = 'bg-amber-950/60 border-amber-800 text-amber-200';
-        if (topAlert.level === 'danger') colorClass = 'bg-red-950/60 border-red-800 text-red-200';
-        if (topAlert.level === 'backup') colorClass = 'bg-blue-950/70 border-blue-700 text-blue-200';
+        let colorClass = 'bg-yellow-950 border-yellow-400 text-yellow-200';
+        if (topAlert.level === 'danger') colorClass = 'bg-red-950 border-red-500 text-red-200';
+        if (topAlert.level === 'backup') colorClass = 'bg-cyan-950 border-cyan-400 text-cyan-200';
 
-        alertEl.className = `p-3 mx-4 mt-3 rounded-xl border block ${colorClass}`;
+        alertEl.className = `p-4 mx-4 mt-4 rounded-3xl border-2 block ${colorClass}`;
         alertEl.innerHTML = `
-          <div class="text-xs font-black">${topAlert.title}</div>
-          <div class="text-[11px] mt-0.5">${topAlert.text}</div>
+          <div class="text-sm font-black">${topAlert.title}</div>
+          <div class="text-xs font-bold mt-1 leading-relaxed">${topAlert.text}</div>
           ${topAlert.action || ''}
         `;
       } else {
@@ -955,22 +952,23 @@
       alert("今週のバックアップが完了したぞ。これでデータは安全だ！");
     }
 
-    // --- 5. タブ切り替えとモーダル制御 ---
+    // 5タブ切り替え制御
     function switchTab(tabId) {
       document.querySelectorAll('.tab-pane').forEach(el => el.classList.add('hidden'));
       document.getElementById(`tab-${tabId}`).classList.remove('hidden');
 
-      const tabs = ['workout', 'nutrition', 'daily', 'analytics'];
+      const tabs = ['plan', 'workout', 'nutrition', 'daily', 'analytics'];
       tabs.forEach(t => {
         const btn = document.getElementById(`nav-${t}`);
         if (t === tabId) {
           btn.classList.add('text-emerald-400');
-          btn.classList.remove('text-slate-400');
+          btn.classList.remove('text-zinc-400');
         } else {
           btn.classList.remove('text-emerald-400');
-          btn.classList.add('text-slate-400');
+          btn.classList.add('text-zinc-400');
         }
       });
+      window.scrollTo({ top: 0, behavior: 'instant' });
     }
 
     function openApiKeyModal() {
@@ -1014,7 +1012,7 @@
           alert("全データの復元に成功したぞ！戦線に復帰しろ！");
         } catch (err) {
           console.error(err);
-          alert("ファイルの読み込みに失敗した。破損しているか形式が違うぞ。");
+          alert("ファイルの読み込みに失敗した。形式が違うぞ。");
         }
       };
       reader.readAsText(file);
@@ -1022,11 +1020,20 @@
     }
 
     function resetTodayData() {
-      if (confirm("本日の食事・筋トレチェックをリセットするか？")) {
+      if (confirm("本日の食事・筋トレチェックのみをリセットするか？")) {
         appData.daily.completedExercises = {};
         appData.daily.isCompletedToday = false;
         appData.daily.meals = [];
         saveData();
+      }
+    }
+
+    function factoryReset() {
+      const ok = confirm("【警告：完全初期化】\nテスト記録、過去の重量履歴、体重、食事ログを含むすべてのデータを完全に消去し、アプリを初期状態に戻します。\n\n本当によろしいですか？");
+      if (ok) {
+        localStorage.removeItem(STORAGE_KEY);
+        alert("全データを完全消去したぞ。新品の状態で再起動する！");
+        location.reload();
       }
     }
 
