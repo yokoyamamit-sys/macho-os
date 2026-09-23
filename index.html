@@ -151,7 +151,7 @@
       </div>
     </div>
 
-    <!-- TAB 3: 食事 -->
+    <!-- TAB 3: 食事（★給餌カタログ完全復活！） -->
     <div id="tab-nutrition" class="tab-pane hidden space-y-5">
       <div class="bg-zinc-900 border-2 border-zinc-700 rounded-3xl p-5 space-y-4">
         <div class="flex justify-between items-center border-b border-zinc-800 pb-2.5">
@@ -242,6 +242,25 @@
         <div id="aiLoading" class="hidden text-center py-2 text-sm font-black text-emerald-400 animate-pulse">Gemini が精密解析中...</div>
       </div>
 
+      <!-- ★完全復活：参謀厳選 給餌カタログ（画像・分量・PFCカンペ） -->
+      <div class="bg-zinc-900 border-2 border-zinc-700 rounded-3xl p-4 space-y-3">
+        <div class="flex justify-between items-center">
+          <h3 class="text-sm font-black text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
+            <span>🍽️</span> 参謀厳選：給餌カタログ（参考書）
+          </h3>
+          <span class="text-xs font-bold text-zinc-400">画像・分量・PFCカンペ</span>
+        </div>
+
+        <div class="grid grid-cols-4 gap-1 p-1 bg-black rounded-xl border border-zinc-800 text-center">
+          <button onclick="switchCatalogCategory('lunch')" id="catBtn-lunch" class="py-2 text-xs font-black rounded-lg bg-emerald-500 text-black">お昼</button>
+          <button onclick="switchCatalogCategory('pre')" id="catBtn-pre" class="py-2 text-xs font-black rounded-lg text-zinc-400 hover:text-white">途中</button>
+          <button onclick="switchCatalogCategory('post')" id="catBtn-post" class="py-2 text-xs font-black rounded-lg text-zinc-400 hover:text-white">直後糖質</button>
+          <button onclick="switchCatalogCategory('dinner')" id="catBtn-dinner" class="py-2 text-xs font-black rounded-lg text-zinc-400 hover:text-white">夜</button>
+        </div>
+
+        <div id="catalogList" class="space-y-3 pt-1"></div>
+      </div>
+
       <!-- 食事ログリスト -->
       <div class="space-y-2.5">
         <div class="flex justify-between items-center">
@@ -283,7 +302,7 @@
       </div>
     </div>
 
-    <!-- TAB 5: 参謀（★本日のみリセットボタン完全復活） -->
+    <!-- TAB 5: 参謀（本日のみリセット完備） -->
     <div id="tab-analytics" class="tab-pane hidden space-y-4">
       <div class="bg-zinc-900 border-2 border-zinc-700 rounded-3xl p-5 space-y-3">
         <h2 class="text-base font-black text-white">💀 参謀の冷徹総括</h2>
@@ -297,7 +316,6 @@
           💾 JSON書き出し
         </button>
 
-        <!-- ★完全復活：動作確認用 本日のみリセット -->
         <button onclick="resetTodayData()" class="w-full py-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-black rounded-xl border border-zinc-600 active:scale-95 transition flex items-center justify-center gap-1.5">
           <span>🔄</span> 本日の記録のみリセット（テスト・動作確認用）
         </button>
@@ -427,6 +445,124 @@
       { day: 0, name: '日', label: '休', isWork: false }
     ];
 
+    // ★給餌カタログ全データ
+    const MEAL_CATALOG = {
+      lunch: [
+        {
+          name: '鶏胸肉の照り焼き定食',
+          cal: 650, p: 45, f: 9, c: 90, sugar: 8,
+          img: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&auto=format&fit=crop&q=80',
+          volume: '皮なし鶏胸肉180g / 白米220g(中盛強) / 味噌汁(豆腐1/4丁) / ブロッコリー50g',
+          desc: '脂質を極限まで削りつつ、午後の活動エネルギーと45gのタンパク質を確保する最強の王道メニュー。'
+        },
+        {
+          name: 'サバの塩焼き定食',
+          cal: 680, p: 38, f: 18, c: 85, sugar: 2,
+          img: 'https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=600&auto=format&fit=crop&q=80',
+          volume: 'サバ塩焼き1切れ(100g) / 白米220g / 納豆1パック / 味噌汁',
+          desc: '良質なオメガ3脂肪酸(EPA/DHA)が筋膜の炎症を抑えインスリン感受性を改善。納豆追加でタ38g突破。'
+        },
+        {
+          name: '魚介トマトソースパスタ（ペスカトーレ）',
+          cal: 620, p: 36, f: 10, c: 92, sugar: 6,
+          img: 'https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=600&auto=format&fit=crop&q=80',
+          volume: '乾麺パスタ100g(アルデンテ) / エビ・イカ・アサリ150g / トマトピューレ・ニンニク',
+          desc: '低GIのパスタは持続的エネルギー供給に最適。貝類の亜鉛とタウリンがテストステロンを後押しする。'
+        },
+        {
+          name: '牛赤身肉ステーキ定食',
+          cal: 630, p: 44, f: 13, c: 80, sugar: 5,
+          img: 'https://images.unsplash.com/photo-1600891964092-4316c288032e?w=600&auto=format&fit=crop&q=80',
+          volume: '牛モモ赤身170g / 白米200g / 和風おろし玉ねぎソース / サラダ',
+          desc: '天然のクレアチンと鉄分・亜鉛を補給。夜のトレーニングで出力できる筋パワーの底上げを狙う。'
+        }
+      ],
+      pre: [
+        {
+          name: 'おにぎり2個＋ちくわ2本',
+          cal: 420, p: 18, f: 3, c: 80, sugar: 3,
+          img: 'https://images.unsplash.com/photo-1505253758473-96b3015f21c9?w=600&auto=format&fit=crop&q=80',
+          volume: '鮭/昆布おにぎり2個(米約200g) / ちくわ2本(またはチキンバー1本)',
+          desc: 'トレ2.5時間前に完食。脂3g以下で完全に胃を通過させ、血糖値を満タンにしてジムに入る。'
+        },
+        {
+          name: '力うどん（切り餅1個＋温玉）',
+          cal: 430, p: 17, f: 6, c: 78, sugar: 4,
+          img: 'https://images.unsplash.com/photo-1618841557871-b4664fbf0cb3?w=600&auto=format&fit=crop&q=80',
+          volume: 'うどん1玉 / 切り餅1個(50g) / 温泉卵1個 / 刻みネギ',
+          desc: 'うどんと餅のダブル炭水化物は胃もたれゼロ。素早くグリコーゲンに変換され、後半セットのバテを防ぐ。'
+        },
+        {
+          name: 'バナナ2本＋プロテイン水割り半量',
+          cal: 360, p: 17, f: 2, c: 68, sugar: 28,
+          img: 'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=600&auto=format&fit=crop&q=80',
+          volume: 'バナナ中2本(可食部約180g) / ホエイプロテイン15g(水割り)',
+          desc: 'デスクで素早く補給可能。カリウムが筋痙攣を防ぎ、果糖・ブドウ糖が即効エネルギーになる。'
+        },
+        {
+          name: '和菓子大福＋どら焼き半分＋ゆで卵',
+          cal: 390, p: 14, f: 5, c: 72, sugar: 38,
+          img: 'https://images.unsplash.com/photo-1582293041079-7814c2f12063?w=600&auto=format&fit=crop&q=80',
+          volume: '豆大福1個(約100g) / どら焼き半分 / ゆで卵1個(塩少々)',
+          desc: '小豆のポリフェノールとあんこの糖分が爆速で血中に乗る。ビルダー御用達のプレワークアウト食。'
+        }
+      ],
+      post: [
+        {
+          name: '【最強同化】プロテイン＋粉飴（マルトデキストリン）',
+          cal: 240, p: 28, f: 1, c: 30, sugar: 2,
+          img: 'https://images.unsplash.com/photo-1579722821273-0f6c7d44362f?w=600&auto=format&fit=crop&q=80',
+          volume: 'ホエイプロテイン30g ＋ 粉飴(マルトデキストリン)30g（水300ml）',
+          desc: 'トレ終了即に流し込む黄金比。咀嚼ゼロ・胃腸負担ゼロでインスリンを急上昇させ、アミノ酸を筋細胞に強制輸送する。'
+        },
+        {
+          name: '【果汁同化】プロテイン＋100%オレンジジュース',
+          cal: 230, p: 26, f: 1, c: 28, sugar: 24,
+          img: 'https://images.unsplash.com/photo-1613478223719-2ab802602423?w=600&auto=format&fit=crop&q=80',
+          volume: 'ホエイプロテイン30g(水割り) ＋ 100%オレンジジュース250ml',
+          desc: '果糖とブドウ糖、クエン酸が同時に筋グリコーゲンを再合成。このタイミングの果汁は脂肪にならず筋肉に吸い込まれる。'
+        },
+        {
+          name: '【コンビニ直撃】プロテイン＋ひとくち羊羹1本',
+          cal: 250, p: 27, f: 1, c: 35, sugar: 32,
+          img: 'https://images.unsplash.com/photo-1582293041079-7814c2f12063?w=600&auto=format&fit=crop&q=80',
+          volume: 'プロテインドリンク(市販20g) ＋ ひとくち羊羹1本(約55g)',
+          desc: '更衣室で30秒でチャージ完了。羊羹は脂質0.2gの超高純度糖質。筋分解のシャットダウンに即効性あり。'
+        }
+      ],
+      dinner: [
+        {
+          name: 'マグロ赤身とサーモン海鮮丼',
+          cal: 670, p: 46, f: 11, c: 95, sugar: 3,
+          img: 'https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=600&auto=format&fit=crop&q=80',
+          volume: 'マグロ赤身100g / サーモン50g / 白米250g(大盛) / 冷奴(絹ごし半丁)',
+          desc: 'トレ直後の補給から1時間後に投入。刺身は熱変性していない良質タンパク質。消化吸収スピードが段違い。'
+        },
+        {
+          name: '豚ヒレ肉の生姜焼き定食',
+          cal: 650, p: 44, f: 10, c: 92, sugar: 8,
+          img: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&auto=format&fit=crop&q=80',
+          volume: '豚ヒレ肉180g / 白米250g / 玉ねぎ少々 / 具沢山豚汁(根菜・こんにゃく)',
+          desc: '豚ヒレはロースの数分の一の脂質。ビタミンB1が炭水化物の代謝を爆進させ、乳酸の分解と疲労回復を加速させる。'
+        },
+        {
+          name: '鶏むね肉と卵の親子丼',
+          cal: 680, p: 47, f: 13, c: 90, sugar: 9,
+          img: 'https://images.unsplash.com/photo-1512058564366-18510be2db19?w=600&auto=format&fit=crop&q=80',
+          volume: '皮なし鶏胸肉160g / 卵2個(ふわとろ半熟) / 白米250g / 出汁つゆ',
+          desc: '卵の完全アミノ酸スコア100と鶏胸肉のダブル同化。夜遅い時間の食事でも胃腸に負担をかけず深睡眠を邪魔しない。'
+        },
+        {
+          name: 'チキン＋納豆2個＋大盛飯（自炊ゼロ）',
+          cal: 680, p: 48, f: 14, c: 88, sugar: 4,
+          img: 'https://images.unsplash.com/photo-1505253758473-96b3015f21c9?w=600&auto=format&fit=crop&q=80',
+          volume: 'サラダチキン1個(110g) / 納豆2パック / 生卵1個 / パックご飯(250g)',
+          desc: '疲弊して帰宅しても包丁・コンロ一切不要、3分で完成。妥協なくタンパク質48gを喉へ叩き込む非常事態用メニュー。'
+        }
+      ]
+    };
+
+    let currentCatalogCategory = 'lunch';
     let selectedPlanDay = new Date().getDay();
     let currentChartSpan = '1y';
     let viewingMealLogDate = new Date().toISOString().split('T')[0];
@@ -526,6 +662,7 @@
       renderPlanTimeline();
       renderWorkoutTab();
       renderNutritionTab();
+      renderCatalogList();
       renderDailyTab();
       renderCharts();
       renderCommanderAlerts();
@@ -666,7 +803,7 @@
       saveData();
     }
 
-    // ★筋トレタブ（各セット回数を「＋」「ー」ポチポチ仕様へ進化！）
+    // 筋トレタブ（回数ポチポチ仕様 ＆ W-up完備）
     function renderWorkoutTab() {
       const routine = ROUTINES[appData.currentPhaseIdx];
       document.getElementById('currentPhaseBadge').innerText = routine.title;
@@ -706,7 +843,6 @@
         const savedWeight = historyObj.weight || ex.defaultWeight;
         const pastLogs = historyObj.logs || [];
 
-        // 本日の作業ログ
         if (!appData.daily.todayExerciseLogs[ex.name]) {
           const defaultReps = historyObj.reps ? [...historyObj.reps] : [...ex.reps];
           appData.daily.todayExerciseLogs[ex.name] = {
@@ -717,7 +853,6 @@
         const todayLog = appData.daily.todayExerciseLogs[ex.name];
         const isDone = !!appData.daily.completedExercises[ex.name];
 
-        // 過去2回分のログ
         let prevLogText = '初挑戦';
         let prev2LogText = '-';
 
@@ -782,7 +917,7 @@
             </div>
           </div>
 
-          <!-- ★改修：各セット回数（直接入力ではなく＋/ーボタンでポチポチ操作！） -->
+          <!-- 各セット回数（＋/ーボタンでポチポチ操作） -->
           <div class="grid grid-cols-3 gap-2 text-center">
             ${[0, 1, 2].map(idx => `
               <div class="bg-black p-2 rounded-2xl border border-zinc-800 flex flex-col items-center">
@@ -810,7 +945,6 @@
       }
     }
 
-    // ★改修：＋/ーで回数を直接増減
     function adjustExRep(name, setIdx, delta) {
       const log = appData.daily.todayExerciseLogs[name];
       if (log) {
@@ -958,6 +1092,61 @@
       else { badgeS.className = 'text-xs font-black px-2.5 py-0.5 rounded bg-emerald-950 text-emerald-400'; badgeS.innerText = '極小'; }
 
       renderMealLogsForDate(viewingMealLogDate);
+    }
+
+    function switchCatalogCategory(cat) {
+      currentCatalogCategory = cat;
+      ['lunch', 'pre', 'post', 'dinner'].forEach(c => {
+        const btn = document.getElementById(`catBtn-${c}`);
+        if (btn) {
+          if (c === cat) {
+            btn.className = 'py-2 text-xs font-black rounded-lg bg-emerald-500 text-black';
+          } else {
+            btn.className = 'py-2 text-xs font-black rounded-lg text-zinc-400 hover:text-white';
+          }
+        }
+      });
+      renderCatalogList();
+    }
+
+    function renderCatalogList() {
+      const container = document.getElementById('catalogList');
+      if (!container) return;
+      const items = MEAL_CATALOG[currentCatalogCategory] || [];
+      container.innerHTML = '';
+
+      items.forEach((item) => {
+        const card = document.createElement('div');
+        card.className = 'bg-black border-2 border-zinc-700 rounded-2xl overflow-hidden shadow-lg space-y-2.5 p-3.5';
+        card.innerHTML = `
+          <div class="relative h-32 rounded-xl overflow-hidden bg-zinc-800">
+            <img src="${item.img}" alt="${item.name}" class="w-full h-full object-cover" onerror="this.parentElement.style.display='none'">
+            <div class="absolute bottom-2 left-2 bg-black/85 backdrop-blur px-2.5 py-1 rounded-lg border border-zinc-600 text-sm font-black text-white">
+              ${item.name}
+            </div>
+          </div>
+
+          <div class="flex justify-between items-center text-xs font-black bg-zinc-900 p-2.5 rounded-xl border border-zinc-800">
+            <span class="text-yellow-400 text-sm font-black">${item.cal} kcal</span>
+            <div class="flex gap-2 text-xs">
+              <span class="text-emerald-400 font-black">タ:${item.p}g</span>
+              <span class="text-orange-400 font-bold">脂:${item.f}g</span>
+              <span class="text-yellow-300 font-bold">炭:${item.c}g</span>
+              <span class="text-fuchsia-400 font-bold">糖:${item.sugar || 0}g</span>
+            </div>
+          </div>
+
+          <div class="text-xs font-bold text-zinc-300 bg-zinc-950 p-2.5 rounded-xl border border-zinc-800/80 leading-relaxed">
+            <span class="text-xs font-black text-emerald-400 block mb-0.5 uppercase tracking-wider">分量・食材構成:</span>
+            ${item.volume}
+          </div>
+
+          <p class="text-xs font-bold text-zinc-400 px-1 leading-snug">
+            ${item.desc}
+          </p>
+        `;
+        container.appendChild(card);
+      });
     }
 
     function renderMealLogsForDate(dateStr) {
@@ -1274,7 +1463,6 @@
       a.click();
     }
 
-    // ★完全復活：動作確認用 本日のみリセット
     function resetTodayData() {
       if (confirm("本日の食事・筋トレチェック・各セット記録のみをリセットするか？（過去履歴や基本設定は維持されます）")) {
         appData.daily.completedExercises = {};
