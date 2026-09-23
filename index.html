@@ -244,76 +244,103 @@
     <!-- ========================================== -->
     <div id="tab-nutrition" class="tab-pane hidden space-y-5">
       
-      <!-- ★本日の栄養摂取状況（タ・脂・炭・糖 完全配置ゲージ） -->
-      <div class="bg-zinc-900 border-2 border-zinc-700 rounded-3xl p-5 space-y-3.5">
-        <div class="flex justify-between items-center mb-1">
-          <h2 class="text-base font-black text-white">本日の栄養摂取状況</h2>
-          <span class="text-[10px] font-bold text-zinc-400">タ・脂・炭・糖 完全監視</span>
+      <!-- ★本日の栄養摂取状況（下限・理想幅・警戒上限 完全可視化） -->
+      <div class="bg-zinc-900 border-2 border-zinc-700 rounded-3xl p-5 space-y-4">
+        <div class="flex justify-between items-center border-b border-zinc-800 pb-2.5">
+          <div>
+            <h2 class="text-base font-black text-white">本日の栄養摂取状況</h2>
+            <p class="text-[11px] font-bold text-zinc-400">「幅」と「上限」を死守して肉体をコントロールしろ</p>
+          </div>
+          <span class="text-[10px] font-black bg-black border border-zinc-700 px-2 py-1 rounded-lg text-emerald-400">リアルタイム判定</span>
         </div>
 
-        <!-- ① 【タ】タンパク質ゲージ -->
-        <div class="space-y-1">
-          <div class="flex justify-between text-xs font-black">
-            <span class="text-zinc-300 flex items-center gap-1.5">
+        <!-- ① 【タ】タンパク質：必達ノルマ（とりすぎOK） -->
+        <div class="bg-black/60 p-3 rounded-2xl border border-zinc-800 space-y-1.5">
+          <div class="flex justify-between items-center">
+            <span class="text-xs font-black text-white flex items-center gap-1.5">
               <span class="px-1.5 py-0.5 rounded bg-emerald-500 text-black text-[10px] font-black">タ</span>
-              タンパク質 (目標: <span id="targetProteinText">140</span>g)
+              タンパク質
+              <span class="text-[10px] font-bold text-emerald-400 border border-emerald-500/40 px-1 rounded">必達・とりすぎOK</span>
             </span>
-            <span id="currentProteinText" class="text-emerald-400 text-sm">0g</span>
+            <span id="badge-protein" class="text-[10px] font-black px-2 py-0.5 rounded">判定中</span>
           </div>
-          <div class="w-full bg-black h-3 rounded-full overflow-hidden border border-zinc-700">
+          <div class="flex justify-between text-xs font-bold text-zinc-400">
+            <span>現在: <strong id="currentProteinText" class="text-sm font-black text-emerald-400">0g</strong></span>
+            <span>推奨幅: <span id="targetProteinRange" class="text-white font-black">130g 〜 160g</span></span>
+          </div>
+          <div class="w-full bg-zinc-950 h-3 rounded-full overflow-hidden border border-zinc-800">
             <div id="proteinBar" class="bg-emerald-500 h-full w-0 transition-all duration-500"></div>
           </div>
+          <p class="text-[10px] font-bold text-zinc-500">※筋肉の建材。下限130gは絶対死守。160g超えても害なし。</p>
         </div>
 
-        <!-- ② 【脂】脂質ゲージ -->
-        <div class="space-y-1">
-          <div class="flex justify-between text-xs font-black">
-            <span class="text-zinc-300 flex items-center gap-1.5">
+        <!-- ② 【脂】脂質：制限上限（とりすぎ絶対NG） -->
+        <div class="bg-black/60 p-3 rounded-2xl border border-zinc-800 space-y-1.5">
+          <div class="flex justify-between items-center">
+            <span class="text-xs font-black text-white flex items-center gap-1.5">
               <span class="px-1.5 py-0.5 rounded bg-orange-500 text-black text-[10px] font-black">脂</span>
-              脂質 (目安上限: <span id="targetFatText">50</span>g)
+              脂質
+              <span class="text-[10px] font-bold text-orange-400 border border-orange-500/40 px-1 rounded">制限・とりすぎNG</span>
             </span>
-            <span id="currentFatText" class="text-orange-400 text-sm">0g</span>
+            <span id="badge-fat" class="text-[10px] font-black px-2 py-0.5 rounded">判定中</span>
           </div>
-          <div class="w-full bg-black h-3 rounded-full overflow-hidden border border-zinc-700">
+          <div class="flex justify-between text-xs font-bold text-zinc-400">
+            <span>現在: <strong id="currentFatText" class="text-sm font-black text-orange-400">0g</strong></span>
+            <span>許容幅: <span id="targetFatRange" class="text-white font-black">35g 〜 50g</span> (上限55g)</span>
+          </div>
+          <div class="w-full bg-zinc-950 h-3 rounded-full overflow-hidden border border-zinc-800">
             <div id="fatBar" class="bg-orange-500 h-full w-0 transition-all duration-500"></div>
           </div>
+          <p class="text-[10px] font-bold text-zinc-500">※ホルモン原料に最低35gは必要。55g超えた分は最速で皮下脂肪化。</p>
         </div>
 
-        <!-- ③ 【炭】炭水化物ゲージ -->
-        <div class="space-y-1">
-          <div class="flex justify-between text-xs font-black">
-            <span class="text-zinc-300 flex items-center gap-1.5">
+        <!-- ③ 【炭】炭水化物：活動燃料（適正幅に収めろ） -->
+        <div class="bg-black/60 p-3 rounded-2xl border border-zinc-800 space-y-1.5">
+          <div class="flex justify-between items-center">
+            <span class="text-xs font-black text-white flex items-center gap-1.5">
               <span class="px-1.5 py-0.5 rounded bg-yellow-400 text-black text-[10px] font-black">炭</span>
-              炭水化物 (目標: <span id="targetCarbsText">315</span>g)
+              炭水化物
+              <span class="text-[10px] font-bold text-yellow-400 border border-yellow-500/40 px-1 rounded">燃料・適正維持</span>
             </span>
-            <span id="currentCarbsText" class="text-yellow-400 text-sm">0g</span>
+            <span id="badge-carbs" class="text-[10px] font-black px-2 py-0.5 rounded">判定中</span>
           </div>
-          <div class="w-full bg-black h-3 rounded-full overflow-hidden border border-zinc-700">
+          <div class="flex justify-between text-xs font-bold text-zinc-400">
+            <span>現在: <strong id="currentCarbsText" class="text-sm font-black text-yellow-400">0g</strong></span>
+            <span>適正幅: <span id="targetCarbsRange" class="text-white font-black">260g 〜 330g</span> (警戒380g)</span>
+          </div>
+          <div class="w-full bg-zinc-950 h-3 rounded-full overflow-hidden border border-zinc-800">
             <div id="carbsBar" class="bg-yellow-400 h-full w-0 transition-all duration-500"></div>
           </div>
+          <p class="text-[10px] font-bold text-zinc-500">※主食のデンプンを含む炭水化物全体。抜けば筋分解、380g超えは体脂肪蓄積。</p>
         </div>
 
-        <!-- ④ 【糖】糖質・液体糖（ジュース等）ゲージ -->
-        <div class="space-y-1">
-          <div class="flex justify-between text-xs font-black">
-            <span class="text-zinc-300 flex items-center gap-1.5">
+        <!-- ④ 【糖】うち糖質・液体糖：警戒嗜好品（取らなくて良い・とりすぎ猛毒） -->
+        <div class="bg-black/60 p-3 rounded-2xl border border-zinc-800 space-y-1.5">
+          <div class="flex justify-between items-center">
+            <span class="text-xs font-black text-white flex items-center gap-1.5">
               <span class="px-1.5 py-0.5 rounded bg-fuchsia-500 text-white text-[10px] font-black">糖</span>
-              うち糖質/ジュース (警戒: 50g)
+              うち糖質/ジュース
+              <span class="text-[10px] font-bold text-fuchsia-400 border border-fuchsia-500/40 px-1 rounded">不要・極小推奨</span>
             </span>
-            <span id="currentSugarText" class="text-fuchsia-400 text-sm">0g</span>
+            <span id="badge-sugar" class="text-[10px] font-black px-2 py-0.5 rounded">判定中</span>
           </div>
-          <div class="w-full bg-black h-3 rounded-full overflow-hidden border border-zinc-700">
+          <div class="flex justify-between text-xs font-bold text-zinc-400">
+            <span>現在: <strong id="currentSugarText" class="text-sm font-black text-fuchsia-400">0g</strong></span>
+            <span>理想: <span class="text-white font-black">0g 〜 25g</span> (警戒上限45g)</span>
+          </div>
+          <div class="w-full bg-zinc-950 h-3 rounded-full overflow-hidden border border-zinc-800">
             <div id="sugarBar" class="bg-fuchsia-500 h-full w-0 transition-all duration-500"></div>
           </div>
+          <p class="text-[10px] font-bold text-zinc-500">※ジュース・菓子・調味料の添加砂糖・果糖。麺や米のデンプンは含まない。</p>
         </div>
 
-        <!-- ⑤ 総カロリーゲージ -->
+        <!-- ⑤ 総カロリー収支 -->
         <div class="pt-2 border-t border-zinc-800 space-y-1">
           <div class="flex justify-between text-xs font-black">
-            <span class="text-zinc-400">総カロリー (目安: <span id="targetCalText">2400</span>kcal)</span>
-            <span id="currentCalText" class="text-yellow-400 text-sm">0kcal</span>
+            <span class="text-zinc-400">総カロリー (適正幅: <span id="targetCalRange">2200 〜 2450</span> kcal)</span>
+            <span id="currentCalText" class="text-yellow-400 text-sm font-black">0kcal</span>
           </div>
-          <div class="w-full bg-black h-2.5 rounded-full overflow-hidden border border-zinc-800">
+          <div class="w-full bg-zinc-950 h-2.5 rounded-full overflow-hidden border border-zinc-800">
             <div id="calBar" class="bg-yellow-400 h-full w-0 transition-all duration-500"></div>
           </div>
         </div>
@@ -348,13 +375,13 @@
         </div>
       </div>
 
-      <!-- 参謀厳選：筋肥大給餌カタログ -->
+      <!-- 参謀厳選：筋肥大給餌カタログ（参考書） -->
       <div class="bg-zinc-900 border-2 border-zinc-700 rounded-3xl p-4 space-y-3">
         <div class="flex justify-between items-center">
           <h3 class="text-xs font-black text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
-            <span>🍽️</span> 参謀厳選：筋肥大給餌カタログ
+            <span>🍽️</span> 参謀厳選：給餌カタログ（参考書）
           </h3>
-          <span class="text-[10px] font-bold text-zinc-400">画像・分量・タ脂炭糖完全版</span>
+          <span class="text-[10px] font-bold text-zinc-400">画像・分量・PFCカンペ</span>
         </div>
 
         <div class="grid grid-cols-3 gap-1.5 p-1 bg-black rounded-xl border border-zinc-800">
@@ -627,7 +654,7 @@
       { day: 0, name: '日', label: '休', isWork: false }
     ];
 
-    // ★給餌カタログ（タ・脂・炭・糖 完全表記）
+    // ★給餌カタログ（参考書としてスッキリ表示）
     const MEAL_CATALOG = {
       lunch: [
         {
@@ -1416,18 +1443,32 @@
       saveData();
     }
 
-    // ★食事タブの描画（タ・脂・炭・糖 完全連動ゲージ）
+    // ★食事タブの描画（下限・理想幅・警戒上限＆状態バッジ判定）
     function renderNutritionTab() {
-      const targetProtein = Math.round(appData.user.weight * 2.0); // 140g
-      const targetFat = Math.round(appData.user.weight * 0.7);     // 50g
-      const targetCarbs = Math.round(appData.user.weight * 4.5);   // 315g
-      const targetSugar = 50;                                      // 糖質上限50g
-      const targetCal = Math.round(appData.user.weight * 33);      // 2310kcal
+      const w = appData.user.weight || 70.0;
 
-      document.getElementById('targetProteinText').innerText = targetProtein;
-      document.getElementById('targetFatText').innerText = targetFat;
-      document.getElementById('targetCarbsText').innerText = targetCarbs;
-      document.getElementById('targetCalText').innerText = targetCal;
+      const pMin = Math.round(w * 1.85); // 130g
+      const pOpt = Math.round(w * 2.0);  // 140g
+      const pMax = Math.round(w * 2.3);  // 160g
+
+      const fMin = 35;                   // 35g
+      const fOpt = Math.round(w * 0.7);  // 約50g
+      const fAlert = 55;                 // 55g
+
+      const cMin = 260;                  // 260g
+      const cOpt = Math.round(w * 4.5);  // 約315g
+      const cAlert = 380;                // 380g
+
+      const sOpt = 25;                   // 25g
+      const sAlert = 45;                 // 45g
+
+      const calMin = Math.round(w * 31); // 2170kcal
+      const calMax = Math.round(w * 35); // 2450kcal
+
+      document.getElementById('targetProteinRange').innerText = `${pMin}g 〜 ${pMax}g`;
+      document.getElementById('targetFatRange').innerText = `${fMin}g 〜 ${fOpt}g`;
+      document.getElementById('targetCarbsRange').innerText = `${cMin}g 〜 330g`;
+      document.getElementById('targetCalRange').innerText = `${calMin} 〜 ${calMax}`;
 
       let totalP = 0, totalF = 0, totalC = 0, totalSugar = 0, totalCal = 0;
       appData.daily.meals.forEach(m => {
@@ -1438,39 +1479,100 @@
         totalCal += m.cal || 0;
       });
 
-      // 数値反映
-      document.getElementById('currentProteinText').innerText = `${totalP}g / ${targetProtein}g`;
-      document.getElementById('currentFatText').innerText = `${totalF}g / ${targetFat}g`;
-      document.getElementById('currentCarbsText').innerText = `${totalC}g / ${targetCarbs}g`;
-      document.getElementById('currentSugarText').innerText = `${totalSugar}g / ${targetSugar}g`;
+      document.getElementById('currentProteinText').innerText = `${totalP}g`;
+      document.getElementById('currentFatText').innerText = `${totalF}g`;
+      document.getElementById('currentCarbsText').innerText = `${totalC}g`;
+      document.getElementById('currentSugarText').innerText = `${totalSugar}g`;
       document.getElementById('currentCalText').innerText = `${totalCal}kcal`;
 
-      // ゲージ比率計算
-      const pPercent = Math.min(100, Math.round((totalP / targetProtein) * 100));
-      const fPercent = Math.min(100, Math.round((totalF / targetFat) * 100));
-      const cPercent = Math.min(100, Math.round((totalC / targetCarbs) * 100));
-      const sugarPercent = Math.min(100, Math.round((totalSugar / targetSugar) * 100));
-      const calPercent = Math.min(100, Math.round((totalCal / targetCal) * 100));
+      // 【タ】判定
+      const badgeP = document.getElementById('badge-protein');
+      const barP = document.getElementById('proteinBar');
+      const pPercent = Math.min(100, Math.round((totalP / pOpt) * 100));
+      barP.style.width = `${pPercent}%`;
 
-      document.getElementById('proteinBar').style.width = `${pPercent}%`;
-      
-      // 脂質は上限超過で赤く変化
-      const fatBarEl = document.getElementById('fatBar');
-      fatBarEl.style.width = `${fPercent}%`;
-      fatBarEl.className = (totalF > targetFat) ? 'bg-red-500 h-full transition-all duration-500' : 'bg-orange-500 h-full transition-all duration-500';
+      if (totalP < pMin) {
+        badgeP.className = 'text-[10px] font-black px-2 py-0.5 rounded bg-red-950 text-red-400 border border-red-700';
+        badgeP.innerText = '不足（筋分解危機）';
+        barP.className = 'bg-red-500 h-full transition-all duration-500';
+      } else if (totalP < pOpt) {
+        badgeP.className = 'text-[10px] font-black px-2 py-0.5 rounded bg-yellow-950 text-yellow-400 border border-yellow-700';
+        badgeP.innerText = 'あと少しで合格';
+        barP.className = 'bg-yellow-400 h-full transition-all duration-500';
+      } else {
+        badgeP.className = 'text-[10px] font-black px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-500';
+        badgeP.innerText = '合格達成（同化MAX）';
+        barP.className = 'bg-emerald-500 h-full transition-all duration-500';
+      }
 
-      // 炭水化物も過剰で警告色へ
-      const carbsBarEl = document.getElementById('carbsBar');
-      carbsBarEl.style.width = `${cPercent}%`;
-      carbsBarEl.className = (totalC > 380) ? 'bg-red-500 h-full transition-all duration-500' : 'bg-yellow-400 h-full transition-all duration-500';
+      // 【脂】判定
+      const badgeF = document.getElementById('badge-fat');
+      const barF = document.getElementById('fatBar');
+      const fPercent = Math.min(100, Math.round((totalF / fAlert) * 100));
+      barF.style.width = `${fPercent}%`;
 
-      // 糖質も上限超過で警告色へ
-      const sugarBarEl = document.getElementById('sugarBar');
-      sugarBarEl.style.width = `${sugarPercent}%`;
-      sugarBarEl.className = (totalSugar > targetSugar) ? 'bg-red-500 h-full transition-all duration-500' : 'bg-fuchsia-500 h-full transition-all duration-500';
+      if (totalF > fAlert) {
+        badgeF.className = 'text-[10px] font-black px-2 py-0.5 rounded bg-red-950 text-red-400 border border-red-700 animate-pulse';
+        badgeF.innerText = '過剰（体脂肪蓄積）';
+        barF.className = 'bg-red-500 h-full transition-all duration-500';
+      } else if (totalF > fOpt) {
+        badgeF.className = 'text-[10px] font-black px-2 py-0.5 rounded bg-yellow-950 text-yellow-400 border border-yellow-700';
+        badgeF.innerText = '上限警戒';
+        barF.className = 'bg-yellow-500 h-full transition-all duration-500';
+      } else if (totalF >= fMin) {
+        badgeF.className = 'text-[10px] font-black px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-600';
+        badgeF.innerText = '安全（理想範囲）';
+        barF.className = 'bg-orange-500 h-full transition-all duration-500';
+      } else {
+        badgeF.className = 'text-[10px] font-black px-2 py-0.5 rounded bg-zinc-800 text-zinc-400 border border-zinc-700';
+        badgeF.innerText = '極低（ホルモン注意）';
+        barF.className = 'bg-orange-400 h-full transition-all duration-500';
+      }
 
+      // 【炭】判定
+      const badgeC = document.getElementById('badge-carbs');
+      const barC = document.getElementById('carbsBar');
+      const cPercent = Math.min(100, Math.round((totalC / cAlert) * 100));
+      barC.style.width = `${cPercent}%`;
+
+      if (totalC > cAlert) {
+        badgeC.className = 'text-[10px] font-black px-2 py-0.5 rounded bg-red-950 text-red-400 border border-red-700 animate-pulse';
+        badgeC.innerText = '過剰（体脂肪直行）';
+        barC.className = 'bg-red-500 h-full transition-all duration-500';
+      } else if (totalC >= cMin) {
+        badgeC.className = 'text-[10px] font-black px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-600';
+        badgeC.innerText = '良好（燃料充填完了）';
+        barC.className = 'bg-yellow-400 h-full transition-all duration-500';
+      } else {
+        badgeC.className = 'text-[10px] font-black px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 border border-zinc-700';
+        badgeC.innerText = '燃料不足（バテ注意）';
+        barC.className = 'bg-yellow-600 h-full transition-all duration-500';
+      }
+
+      // 【糖】判定
+      const badgeS = document.getElementById('badge-sugar');
+      const barS = document.getElementById('sugarBar');
+      const sPercent = Math.min(100, Math.round((totalSugar / sAlert) * 100));
+      barS.style.width = `${sPercent}%`;
+
+      if (totalSugar >= sAlert) {
+        badgeS.className = 'text-[10px] font-black px-2 py-0.5 rounded bg-red-950 text-red-400 border border-red-700 animate-pulse';
+        badgeS.innerText = '猛毒警報（即刻中止）';
+        barS.className = 'bg-red-500 h-full transition-all duration-500';
+      } else if (totalSugar > sOpt) {
+        badgeS.className = 'text-[10px] font-black px-2 py-0.5 rounded bg-yellow-950 text-yellow-400 border border-yellow-700';
+        badgeS.innerText = '警戒領域';
+        barS.className = 'bg-fuchsia-400 h-full transition-all duration-500';
+      } else {
+        badgeS.className = 'text-[10px] font-black px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-600';
+        badgeS.innerText = '極小（完璧）';
+        barS.className = 'bg-fuchsia-600 h-full transition-all duration-500';
+      }
+
+      const calPercent = Math.min(100, Math.round((totalCal / calMax) * 100));
       document.getElementById('calBar').style.width = `${calPercent}%`;
 
+      // ログ一覧
       const logsEl = document.getElementById('mealLogs');
       if (appData.daily.meals.length === 0) {
         logsEl.innerHTML = `<p class="text-sm font-bold text-zinc-500 text-center py-4">まだ記録がねえぞ。食ったら即上げろ。</p>`;
@@ -1520,59 +1622,38 @@
       const items = MEAL_CATALOG[currentCatalogCategory] || [];
       container.innerHTML = '';
 
-      items.forEach((item, idx) => {
+      items.forEach((item) => {
         const card = document.createElement('div');
-        card.className = 'bg-black border-2 border-zinc-700 rounded-2xl overflow-hidden shadow-lg space-y-2.5 p-3.5';
+        card.className = 'bg-black border-2 border-zinc-700 rounded-2xl overflow-hidden shadow-lg space-y-2 p-3';
         card.innerHTML = `
-          <div class="relative h-32 rounded-xl overflow-hidden bg-zinc-800">
+          <div class="relative h-28 rounded-xl overflow-hidden bg-zinc-800">
             <img src="${item.img}" alt="${item.name}" class="w-full h-full object-cover" onerror="this.parentElement.style.display='none'">
             <div class="absolute bottom-2 left-2 bg-black/85 backdrop-blur px-2.5 py-1 rounded-lg border border-zinc-600 text-xs font-black text-white">
               ${item.name}
             </div>
           </div>
 
-          <div class="flex justify-between items-center text-xs font-black bg-zinc-900 p-2.5 rounded-xl border border-zinc-800">
+          <div class="flex justify-between items-center text-xs font-black bg-zinc-900 p-2 rounded-xl border border-zinc-800">
             <span class="text-yellow-400 text-sm font-black">${item.cal} kcal</span>
-            <div class="flex gap-2">
-              <span class="text-emerald-400 font-black">タ: ${item.p}g</span>
-              <span class="text-orange-400 font-bold">脂: ${item.f}g</span>
-              <span class="text-yellow-300 font-bold">炭: ${item.c}g</span>
-              <span class="text-fuchsia-400 font-bold">糖: ${item.sugar || 0}g</span>
+            <div class="flex gap-1.5 text-[11px]">
+              <span class="text-emerald-400 font-black">タ:${item.p}g</span>
+              <span class="text-orange-400 font-bold">脂:${item.f}g</span>
+              <span class="text-yellow-300 font-bold">炭:${item.c}g</span>
+              <span class="text-fuchsia-400 font-bold">糖:${item.sugar || 0}g</span>
             </div>
           </div>
 
-          <div class="text-xs font-bold text-zinc-300 bg-zinc-950 p-2.5 rounded-xl border border-zinc-800/80 leading-relaxed">
-            <span class="text-[10px] font-black text-emerald-400 block mb-0.5 uppercase tracking-wider">具体的な分量・食材構成:</span>
+          <div class="text-[11px] font-bold text-zinc-300 bg-zinc-950 p-2 rounded-xl border border-zinc-800/80 leading-relaxed">
+            <span class="text-[9px] font-black text-emerald-400 block uppercase tracking-wider">分量・食材構成:</span>
             ${item.volume}
           </div>
 
-          <p class="text-[11px] font-bold text-zinc-400 px-1 leading-snug">
+          <p class="text-[10px] font-bold text-zinc-400 px-1 leading-snug">
             ${item.desc}
           </p>
-
-          <button onclick="addCatalogMeal('${currentCatalogCategory}', ${idx})" class="w-full py-2 bg-zinc-800 hover:bg-zinc-700 active:scale-95 text-xs font-black text-emerald-400 border border-zinc-600 rounded-xl transition flex items-center justify-center gap-1.5">
-            <span>＋</span> この食事を本日のログに記録
-          </button>
         `;
         container.appendChild(card);
       });
-    }
-
-    function addCatalogMeal(cat, idx) {
-      const item = MEAL_CATALOG[cat][idx];
-      if (!item) return;
-
-      appData.daily.meals.push({
-        name: item.name,
-        cal: item.cal,
-        protein: item.p,
-        fat: item.f,
-        carbs: item.c,
-        sugar: item.sugar || 0,
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      });
-      saveData();
-      alert(`「${item.name}」を記録したぞ！\n【タ】${item.p}g  【脂】${item.f}g  【炭】${item.c}g (糖:${item.sugar || 0}g)`);
     }
 
     function compressImage(file, maxWidth = 1024, quality = 0.75) {
@@ -1610,7 +1691,7 @@
       });
     }
 
-    // ★写真アップロード ＆ AI解析（タ・脂・炭・糖 完全自動推計）
+    // ★写真アップロード ＆ AI解析（主食デンプンと単純糖質を厳密分離）
     async function handleMealPhoto(e) {
       const file = e.target.files[0];
       if (!file) return;
@@ -1640,7 +1721,9 @@
 
       try {
         const compressed = await compressImage(file, 1024, 0.75);
-        const prompt = "あなたは冷徹な筋トレ栄養参謀です。この食事・飲料の写真から推定される品名、総カロリー(kcal)、タンパク質量(g)、脂質量(g)、炭水化物量(g)、うち糖質量(g)を推計し、次のJSON形式のみで出力してください: {\"name\": \"品名\", \"cal\": 650, \"protein\": 40, \"fat\": 12, \"carbs\": 85, \"sugar\": 15}";
+        
+        // ★厳密分離プロンプト：主食デンプンを全量carbsに入れ、sugarには純粋な砂糖・ジュースのみを抽出させる
+        const prompt = "あなたは冷徹な筋トレ栄養参謀です。この食事・飲料の写真から推定される品名、総カロリー(kcal)、タンパク質量(g)、脂質量(g)、炭水化物量(g)、うち単純糖質量(g)を推計し、次のJSON形式のみで出力してください: {\"name\": \"品名\", \"cal\": 650, \"protein\": 40, \"fat\": 12, \"carbs\": 85, \"sugar\": 5}\n※重要ルール: 「carbs」には米・麺・パン・イモ類のデンプンを含む炭水化物全体(g)を全量計上すること。「sugar」にはジュース、清涼飲料水、菓子、スイーツ、調味料に含まれる添加糖・遊離糖類・果糖のみをカウントすること。主食自体のデンプンは「sugar」には含めず「carbs」にのみ計上すること。";
 
         const candidateModels = [
           'gemini-3.8-flash',
@@ -1717,7 +1800,7 @@
       }
     }
 
-    // ★参謀アラート（炭水化物過多 ＆ 液体糖質過多を完全迎撃）
+    // 参謀アラート
     function renderCommanderAlerts() {
       const alertEl = document.getElementById('alertBanner');
       const remarksEl = document.getElementById('commanderRemarks');
@@ -1752,7 +1835,7 @@
       const totalSugar = appData.daily.meals.reduce((sum, m) => sum + (m.sugar || 0), 0);
       const targetProtein = Math.round(appData.user.weight * 2.0);
 
-      // ★警報①：液体糖質・ジュース過多警報（45g超え）
+      // 警報①：液体糖質・ジュース過多
       if (totalSugar >= 45) {
         alerts.push({
           level: 'danger',
@@ -1762,7 +1845,7 @@
         remarks.push(`・ジュース等の糖質（${totalSugar}g）が多すぎる。咀嚼しない液体糖質はただの脂肪直行便だ。毒を煽るな。`);
       }
 
-      // ★警報②：炭水化物とりすぎ警報（380g超え）
+      // 警報②：炭水化物過多
       if (totalC >= 380) {
         alerts.push({
           level: 'warning',
@@ -1772,7 +1855,7 @@
         remarks.push(`・炭水化物が過剰（${totalC}g）だ。運動量を超えた炭水化物はバルクアップではなく単なる肥満を招くぞ。`);
       }
 
-      // ★警報③：タンパク質不足警報
+      // 警報③：タンパク質不足
       const pDiff = targetProtein - totalP;
       if (pDiff > 0) {
         alerts.push({
