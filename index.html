@@ -83,13 +83,13 @@
       </div>
     </div>
 
-    <!-- TAB 2: 筋トレ（W-up自動計算ガイダンス復活） -->
+    <!-- TAB 2: 筋トレ（回数ポチポチ仕様 ＆ W-up完備） -->
     <div id="tab-workout" class="tab-pane hidden space-y-4">
       <div id="activeWorkoutSection" class="space-y-4">
         <div class="flex items-center justify-between">
           <div>
             <h2 id="workoutTitle" class="text-lg font-black text-white">上半身 A：胸・背中厚み</h2>
-            <p class="text-xs font-bold text-zinc-400">W-upで関節に油を注ぎ、本番セットで限界を超えろ</p>
+            <p class="text-xs font-bold text-zinc-400">＋/ーで回数を即刻調整し、過去の自分を超えろ</p>
           </div>
           <button onclick="advanceWorkoutPhase()" class="text-xs font-black bg-zinc-800 hover:bg-zinc-700 text-zinc-200 px-3 py-2 rounded-xl border border-zinc-600 active:scale-95">
             部位スキップ ❯
@@ -283,15 +283,30 @@
       </div>
     </div>
 
-    <!-- TAB 5: 参謀 -->
+    <!-- TAB 5: 参謀（★本日のみリセットボタン完全復活） -->
     <div id="tab-analytics" class="tab-pane hidden space-y-4">
       <div class="bg-zinc-900 border-2 border-zinc-700 rounded-3xl p-5 space-y-3">
         <h2 class="text-base font-black text-white">💀 参謀の冷徹総括</h2>
         <div id="commanderRemarks" class="text-sm font-bold leading-relaxed text-zinc-200 space-y-2 bg-black p-4 rounded-2xl border border-zinc-700"></div>
       </div>
+
       <div class="bg-zinc-900 border-2 border-zinc-700 rounded-3xl p-5 space-y-4">
-        <button onclick="exportData()" class="w-full py-3 bg-zinc-800 text-sm font-black text-white rounded-xl border border-zinc-600">JSON書き出し</button>
-        <button onclick="factoryReset()" class="w-full py-3 bg-red-600 text-white text-sm font-black rounded-xl">全データ完全リセット</button>
+        <h3 class="text-xs font-black text-zinc-400 tracking-wider uppercase">データ管理 ＆ 初期化</h3>
+
+        <button onclick="exportData()" class="w-full py-3 bg-zinc-800 hover:bg-zinc-700 text-sm font-black text-white rounded-xl border border-zinc-600 active:scale-95 transition">
+          💾 JSON書き出し
+        </button>
+
+        <!-- ★完全復活：動作確認用 本日のみリセット -->
+        <button onclick="resetTodayData()" class="w-full py-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-black rounded-xl border border-zinc-600 active:scale-95 transition flex items-center justify-center gap-1.5">
+          <span>🔄</span> 本日の記録のみリセット（テスト・動作確認用）
+        </button>
+
+        <div class="pt-2 border-t-2 border-zinc-800">
+          <button onclick="factoryReset()" class="w-full py-3.5 bg-red-600 hover:bg-red-500 text-white text-sm font-black rounded-xl shadow-lg shadow-red-900/40 active:scale-95 transition flex items-center justify-center gap-2">
+            <span>⚠️</span> 全データ完全リセット（初期状態に戻す）
+          </button>
+        </div>
       </div>
     </div>
 
@@ -651,7 +666,7 @@
       saveData();
     }
 
-    // ★筋トレタブ（W-up自動計算ガイダンス完全復活！）
+    // ★筋トレタブ（各セット回数を「＋」「ー」ポチポチ仕様へ進化！）
     function renderWorkoutTab() {
       const routine = ROUTINES[appData.currentPhaseIdx];
       document.getElementById('currentPhaseBadge').innerText = routine.title;
@@ -715,7 +730,6 @@
           prev2LogText = `${p2.weight}kg (${p2.reps.join('-')})`;
         }
 
-        // ★完全復活：本番重量連動ウォーミングアップ計算
         const warm1 = Math.round(todayLog.weight * 0.4);
         const warm2 = Math.round(todayLog.weight * 0.7);
 
@@ -746,11 +760,11 @@
             </div>
           </div>
 
-          <!-- ★完全復活：ウォーミングアップ推奨ステップガイダンス -->
+          <!-- ウォーミングアップ推奨ステップガイダンス -->
           <div class="bg-amber-950/40 border border-amber-600/40 rounded-xl p-2.5 mb-3 text-xs font-bold text-amber-200/90 leading-relaxed">
             <div class="flex items-center gap-1.5 font-black text-amber-400 mb-0.5">
               <span>🔥</span>
-              <span>推奨ウォーミングアップ（怪我防止・神経点火）:</span>
+              <span>推奨ウォーミングアップ:</span>
             </div>
             <div class="pl-4">
               ① 40% (約<strong class="text-white font-black">${warm1}kg</strong>) × 8回（関節油注ぎ）<br>
@@ -768,16 +782,17 @@
             </div>
           </div>
 
-          <!-- 各セット回数入力（1set, 2set, 3set） -->
+          <!-- ★改修：各セット回数（直接入力ではなく＋/ーボタンでポチポチ操作！） -->
           <div class="grid grid-cols-3 gap-2 text-center">
             ${[0, 1, 2].map(idx => `
-              <div class="bg-black p-2 rounded-xl border border-zinc-800">
-                <span class="text-[10px] font-black text-zinc-400 block mb-1">本番 ${idx + 1} SET</span>
-                <div class="flex items-center justify-center gap-1">
-                  <input type="number" min="0" max="50" value="${todayLog.reps[idx] || 0}" 
-                    onchange="updateExSetRep('${ex.name}',${idx}, this.value)"
-                    class="w-12 bg-zinc-900 border border-zinc-700 rounded-lg text-center font-black text-white text-base py-1 focus:border-emerald-500 focus:outline-none">
-                  <span class="text-xs font-bold text-zinc-400">回</span>
+              <div class="bg-black p-2 rounded-2xl border border-zinc-800 flex flex-col items-center">
+                <span class="text-[10px] font-black text-zinc-400 uppercase mb-1">${idx + 1} SET</span>
+                <span class="text-base font-black text-white my-0.5">
+                  <span id="repDisplay-${ex.name}-${idx}">${todayLog.reps[idx] || 0}</span> <span class="text-[11px] text-zinc-400">回</span>
+                </span>
+                <div class="flex gap-1.5 mt-1 w-full justify-center">
+                  <button onclick="adjustExRep('${ex.name}',${idx}, -1)" class="w-8 h-8 rounded-xl bg-zinc-850 hover:bg-zinc-700 text-zinc-200 font-black border border-zinc-700 active:scale-90 flex items-center justify-center text-sm">-</button>
+                  <button onclick="adjustExRep('${ex.name}',${idx}, 1)" class="w-8 h-8 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-emerald-400 font-black border border-zinc-600 active:scale-90 flex items-center justify-center text-sm">+</button>
                 </div>
               </div>
             `).join('')}
@@ -795,10 +810,12 @@
       }
     }
 
-    function updateExSetRep(name, setIdx, val) {
+    // ★改修：＋/ーで回数を直接増減
+    function adjustExRep(name, setIdx, delta) {
       const log = appData.daily.todayExerciseLogs[name];
       if (log) {
-        log.reps[setIdx] = parseInt(val, 10) || 0;
+        const current = log.reps[setIdx] || 0;
+        log.reps[setIdx] = Math.max(0, Math.min(50, current + delta));
         saveData();
       }
     }
@@ -1255,6 +1272,23 @@
       a.href = dataStr;
       a.download = `macho_os_${appData.daily.date}.json`;
       a.click();
+    }
+
+    // ★完全復活：動作確認用 本日のみリセット
+    function resetTodayData() {
+      if (confirm("本日の食事・筋トレチェック・各セット記録のみをリセットするか？（過去履歴や基本設定は維持されます）")) {
+        appData.daily.completedExercises = {};
+        appData.daily.isCompletedToday = false;
+        appData.daily.isSkippedToday = false;
+        appData.daily.didPreStretch = false;
+        appData.daily.didPostStretch = false;
+        appData.daily.todayExerciseLogs = {};
+        appData.daily.meals = [];
+        const todayKey = appData.daily.date;
+        if (appData.mealHistory) delete appData.mealHistory[todayKey];
+        saveData();
+        alert("本日の戦闘記録をクリーンな初期状態にリセットしたぞ！");
+      }
     }
 
     function factoryReset() {
